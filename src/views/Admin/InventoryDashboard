@@ -1,0 +1,59 @@
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { AppBar, Toolbar, Typography, Container, Grid, Paper } from '@material-ui/core';
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  header: {
+    height: 64,
+    backgroundColor: theme.palette.primary.main,
+  },
+  content: {
+    marginTop: theme.spacing(4),
+  },
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+  },
+}));
+
+const InventoryDashboard = () => {
+  const classes = useStyles();
+
+  return (
+    <div className={classes.root}>
+      <AppBar position="static">
+        <Toolbar className={classes.header}>
+          <Typography variant="h6">Inventory Management Dashboard</Typography>
+        </Toolbar>
+      </AppBar>
+      <Container className={classes.content}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6} lg={4}>
+            <Paper className={classes.paper}>Products</Paper>
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <Paper className={classes.paper}>Categories</Paper>
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <Paper className={classes.paper}>Suppliers</Paper>
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <Paper className={classes.paper}>Orders</Paper>
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <Paper className={classes.paper}>Inventory Levels</Paper>
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <Paper className={classes.paper}>Sales</Paper>
+          </Grid>
+        </Grid>
+      </Container>
+    </div>
+  );
+};
+
+export default InventoryDashboard;
