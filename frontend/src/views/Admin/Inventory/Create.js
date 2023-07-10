@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { AppBar, Avatar, Card, CardContent, CardHeader, Toolbar,  } from '@material-ui/core';
+
+
 import {
   Container,
   Paper,
@@ -7,35 +10,60 @@ import {
   Button,
   Typography,
   Grid,
+  ThemeProvider,
+  createTheme
 } from '@material-ui/core';
 import { useDropzone } from 'react-dropzone';
 import ImageGalleryUploader from '../../../components/ImageGalleryUploader/ImageGalleryUploader';
 import {toast} from "react-toastify";
 
+
+const myTheme = createTheme({
+  palette: {
+    primary: {
+      main: '#9ccc65', // Replace with your desired color
+    },
+  },
+});
+
 const useStyles = makeStyles((theme) => ({
-  container: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: '10px',
-    // minHeight: '100vh',
+  root: {
+    flexGrow: 1,
+  },
+  header: {
+    height: 64, // Adjust the height as needed
+  },
+  title: {
+    flexGrow: 1,
+  },
+  dashboard: {
+    padding: theme.spacing(2),
   },
   paper: {
-    padding: theme.spacing(4),
-    width: 300,
-  },
-  textField: {
-    marginBottom: theme.spacing(2),
-  },
-  button: {
-    marginTop: theme.spacing(2),
-  },
-  dropzone: {
-    border: '2px dashed #ccc',
-    borderRadius: '4px',
     padding: theme.spacing(2),
     textAlign: 'center',
-    cursor: 'pointer',
+    color: theme.palette.text.secondary,
+    margin: theme.spacing(1),
+  },
+  card: {
+    margin: theme.spacing(1),
+  },
+  warningCard: {
+    margin: theme.spacing(1),
+    border: `2px solid ${theme.palette.warning.light}`,
+  },
+  warningTypography: {
+    color: theme.palette.warning.dark,
+  },
+  pageTitle: {
+    fontWeight: 'bold',
+    marginBottom: theme.spacing(2),
+    
+    color: theme.palette.text.secondary,
+    margin: theme.spacing(1),
+    borderBottom: `2px solid ${myTheme.palette.primary.main}`,
+    paddingBottom: theme.spacing(1),
+    marginBottom: theme.spacing(2),
   },
 }));
 
@@ -92,62 +120,76 @@ const Create = () => {
     accept: 'image/*',
     multiple: false,
   });
-
+  
   return (
-    <Grid container className={classes.container} justify="center" alignItems="center">
-      <Grid item>    
-        <div className={classes.container}>
-        <Container>
-            <Paper className={classes.paper} elevation={3}>
-            <Typography variant="h5" align="center" gutterBottom>
-                Create Inventory Item
-            </Typography>
-            <form onSubmit={handleSubmit}>
-                <TextField
-                type="text"
-                label="Name"
-                variant="outlined"
-                fullWidth
-                className={classes.textField}
-                value={name}
-                onChange={handleNameChange}
-                />
-                <TextField
-                type="number"
-                label="Quantity"
-                variant="outlined"
-                fullWidth
-                className={classes.textField}
-                value={quantity}
-                onChange={handleQuantityChange}
-                />
-                
-                <ImageGalleryUploader
-                    isImageUploader={true}
-                    validation={{
-                      maxFileSize: 3,
-                      maxFileCount: 10,
-                    }}
-                    imageArray={imageViewerArray}
-                    handleImage={uploadMultipleFiles}
-                    handleRemoveImage={handleRemoveImage}
-                  />
-                  
-                <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                fullWidth
-                className={classes.button}
-                >
-                Create
-                </Button>
-            </form>
-            </Paper>
-        </Container>
-        </div>
-      </Grid>
-    </Grid>
+    <ThemeProvider theme={myTheme}>
+      <main className={classes.content}>
+
+        
+        <Typography variant="h5" component="h1" align="left" className={classes.pageTitle} gutterBottom>
+          Inventory
+        </Typography>
+
+        <Grid container className={classes.container} justify="center" alignItems="center" spacing={10}>
+          <Grid item>    
+            <div className={classes.container}>
+            <Container>
+                <Paper className={classes.paper} elevation={3}>
+                <Typography variant="h5" align="center" gutterBottom>
+                    Create Inventory Item
+                </Typography>
+                <form onSubmit={handleSubmit}>
+                    <TextField
+                    type="text"
+                    label="Name"
+                    variant="outlined"
+                    fullWidth
+                    className={classes.textField}
+                    value={name}
+                    onChange={handleNameChange}
+                    style={{ marginBottom: '1rem' }}
+                    />
+                    <TextField
+                    type="number"
+                    label="Quantity"
+                    variant="outlined"
+                    fullWidth
+                    className={classes.textField}
+                    value={quantity}
+                    onChange={handleQuantityChange}
+                    style={{ marginBottom: '1rem' }}
+                    />
+                    
+                    <ImageGalleryUploader
+                      isImageUploader={true}
+                      validation={{
+                        maxFileSize: 3,
+                        maxFileCount: 10,
+                      }}
+                      imageArray={imageViewerArray}
+                      handleImage={uploadMultipleFiles}
+                      handleRemoveImage={handleRemoveImage}
+                      
+                    />
+                      
+                    <Button
+                    style={{ marginTop: '1rem' }}
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    className={classes.button}
+                    >
+                    Create
+                    </Button>
+                </form>
+                </Paper>
+            </Container>
+            </div>
+          </Grid>
+        </Grid>
+      </main>
+    </ThemeProvider>
     
   );
 };

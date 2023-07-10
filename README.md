@@ -3,11 +3,13 @@
 An asset management app template.
 
 ## Build With
+
 - React
 - Material UI
 - Laravel 10
 
 ## Build Log
+
 ```bash
 npx create-react-app inventory
 cd inventory
@@ -30,9 +32,19 @@ php artisan make:resource InventoryResourceCollection --collection
 ```
 
 ## Run
+
 yarn start
 
 ## Demo
+
+### Dashboard
+
 ![Last Progress](./dashboard.png)
 
+### Login
+
 ![Last Progress](./login.png)
+
+### Inventory
+
+![Last Progress](./inventory.png)
