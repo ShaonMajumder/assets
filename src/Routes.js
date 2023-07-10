@@ -3,8 +3,19 @@ import Dashboard from './views/Admin/Dashboard';
 import InventoryDashboard from './views/Admin/InventoryDashboard';
 import Login from './views/Login';
 import { FaDashcube } from 'react-icons/fa';
+import CreateInventory from './views/Admin/CreateInventory';
+import Create from './views/Admin/Inventory/Create';
+import Test from './views/Admin/Inventory/Test';
 
 const routes = [
+  {
+    name: 'Login',
+    path: '/login',
+    component: <Login />,
+    sideBar: false,
+    subNav: [],
+    permission: true,
+  },
   {
     name: 'Dashboard',
     path: '/',
@@ -15,17 +26,25 @@ const routes = [
     permission: true,
   },
   {
-    name: 'Login',
-    path: '/login',
-    component: <Login />,
+    name: 'Inventory',
+    path: '/inventory',
+    component: <InventoryDashboard />,
     sideBar: false,
     subNav: [],
     permission: true,
   },
   {
-    name: 'Inventory',
-    path: '/inventory',
-    component: <InventoryDashboard />,
+    name: 'Add into Inventory',
+    path: '/inventory/create',
+    component: <CreateInventory />,
+    sideBar: false,
+    subNav: [],
+    permission: true,
+  },
+  {
+    name: 'Add into Inventory',
+    path: '/test',
+    component: <Test />,
     sideBar: false,
     subNav: [],
     permission: true,
