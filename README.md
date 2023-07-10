@@ -14,10 +14,13 @@ npx create-react-app inventory
 cd inventory
 yarn add react-bootstrap
 yarn add @material-ui/core
+yarn add react-router-dom
 ```
 
 ## Run
 yarn start
 
 ## Demo
-![Last Progress](./2023-07-09_19-46.png)
+![Last Progress](./dashboard.png)
+
+![Last Progress](./login.png)

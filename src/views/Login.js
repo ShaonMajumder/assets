@@ -1,23 +1,17 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import {
-  Container,
-  Paper,
-  TextField,
-  Button,
-  Typography,
-} from '@material-ui/core';
+import { Paper, TextField, Button, Typography, Grid } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
     minHeight: '100vh',
   },
   paper: {
     padding: theme.spacing(4),
     width: 300,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   textField: {
     marginBottom: theme.spacing(2),
@@ -27,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const LoginPage = () => {
+const Login = () => {
   const classes = useStyles();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -48,8 +42,8 @@ const LoginPage = () => {
   };
 
   return (
-    <div className={classes.container}>
-      <Container>
+    <Grid container className={classes.container} justify="center" alignItems="center">
+      <Grid item>
         <Paper className={classes.paper} elevation={3}>
           <Typography variant="h5" align="center" gutterBottom>
             Login
@@ -84,9 +78,9 @@ const LoginPage = () => {
             </Button>
           </form>
         </Paper>
-      </Container>
-    </div>
+      </Grid>
+    </Grid>
   );
 };
 
-export default LoginPage;
+export default Login;

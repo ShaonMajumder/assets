@@ -1,26 +1,19 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Sidebar from './views/Admin/Sidebar';
-import InventoryTable from './views/Admin/InventoryTable';
-import Header from './views/Admin/Header';
-import Cards from './views/Admin/Cards';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Dashboard from './views/Admin/Dashboard';
-
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex'
-  },
-}));
+import Login from './views/Login';
 
 const App = () => {
-  const classes = useStyles();
-
   return (
-    <div className={classes.root}>
-      <Dashboard />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route exact path="/" element={<Dashboard />} />
+        <Route path="/login" element={<Login />} />
+        {/* Add more routes for other pages */}
+      </Routes>
+    </BrowserRouter>
   );
 };
 
 export default App;
+
