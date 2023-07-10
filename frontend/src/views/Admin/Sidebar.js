@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { List, ListItem, ListItemIcon, ListItemText, Divider, IconButton } from '@material-ui/core';
-import { Inbox, Mail, Dashboard, Menu, ChevronLeft, Drafts, Delete } from '@material-ui/icons';
+import { Inbox, Mail, Dashboard, Menu, ChevronLeft, Drafts, Delete, Store } from '@material-ui/icons';
+import { Link } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -51,7 +52,7 @@ const Sidebar = () => {
         </IconButton>
       </div>
       <List>
-        <ListItem button>
+        <ListItem button component={Link} to="/">
           <ListItemIcon>
             <Dashboard />
           </ListItemIcon>
@@ -83,6 +84,12 @@ const Sidebar = () => {
             <Delete />
           </ListItemIcon>
           <ListItemText primary="Trash" />
+        </ListItem>
+        <ListItem button component={Link} to="/inventory/create">
+          <ListItemIcon>
+            <Store />
+          </ListItemIcon>
+          <ListItemText primary="Inventory" />
         </ListItem>
       </List>
     </div>
