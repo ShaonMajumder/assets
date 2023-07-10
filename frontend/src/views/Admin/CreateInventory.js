@@ -20,10 +20,10 @@ const CreateInventory = () => {
       <Sidebar />
       <div style={{ flex: 1 }}>
         <div >
-          {/* <Header /> */}
+          <Header />
           <Create />
         </div>
-        <InventoryTable />
+        {/* <InventoryTable /> */}
       </div>
     </div>
   );

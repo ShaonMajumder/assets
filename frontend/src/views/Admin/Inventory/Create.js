@@ -17,7 +17,8 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    minHeight: '100vh',
+    margin: '10px',
+    // minHeight: '100vh',
   },
   paper: {
     padding: theme.spacing(4),
