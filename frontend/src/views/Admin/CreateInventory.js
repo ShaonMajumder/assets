@@ -25,6 +25,7 @@ const CreateInventory = () => {
         </div>
         {/* <InventoryTable /> */}
       </div>
+      
     </div>
   );
 };

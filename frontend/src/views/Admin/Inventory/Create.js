@@ -13,10 +13,15 @@ import {
   ThemeProvider,
   createTheme
 } from '@material-ui/core';
-import { useDropzone } from 'react-dropzone';
+
 import ImageGalleryUploader from '../../../components/ImageGalleryUploader/ImageGalleryUploader';
 import {toast} from "react-toastify";
-
+import {jsonToFormdata} from 'convert-form-data';
+import { postInventory } from '../../../services/InventoryServices';
+import { HTTP_OK, HTTP_CREATED } from "../../../utils/HttpStatusCode";
+import { notify } from '../../../components/ImageGalleryUploader/Toast';
+import { SUCCESS } from '../../../components/ImageGalleryUploader/MessageConst';
+import { useNavigate } from 'react-router-dom';
 
 const myTheme = createTheme({
   palette: {
@@ -68,12 +73,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Create = () => {
+  const navigate = useNavigate();
   const classes = useStyles();
-  const [name, setName] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const [file, setFile] = useState(null);
+  const [formFields, setFormFields] = useState({
+    name: '',
+    quantity: '',
+    files: null
+  });
   const [imageViewerArray, setImageViewerArray] = useState([]);
   const [imageFormdataArray, setImageFormdataArray] = useState([]);
+  
 
   const uploadMultipleFiles = (files) => {
     let fileObj = [];
@@ -82,6 +91,11 @@ const Create = () => {
       fileObj.push(URL.createObjectURL(files[i]));
     }
     setImageViewerArray([...imageViewerArray, ...fileObj]);
+    
+    setFormFields((prevState) => ({
+      ...prevState,
+      files: [...imageFormdataArray, ...files]
+    }));
   };
 
   const handleRemoveImage = (id) => {
@@ -93,34 +107,38 @@ const Create = () => {
       position: toast.POSITION.TOP_RIGHT,
       theme: "colored",
     });
+
+    setFormFields((prevState) => ({
+      ...prevState,
+      files: objB
+    }));
   };
 
-  const handleNameChange = (e) => {
-    setName(e.target.value);
-  };
 
-  const handleQuantityChange = (e) => {
-    setQuantity(e.target.value);
-  };
 
-  const handleDrop = (acceptedFiles) => {
-    setFile(acceptedFiles[0]);
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Perform create inventory logic here
-    console.log('Name:', name);
-    console.log('Quantity:', quantity);
-    console.log('File:', imageViewerArray);
+    
+    let formDataObject = new FormData();
+    formDataObject = jsonToFormdata("", formFields, formDataObject);
+    
+    const {data,status} = await postInventory(formDataObject);    
+    if (status === HTTP_OK) {
+      notify(formFields.name+" Inventory Created!", SUCCESS);
+      navigate('/');
+    } else {
+      notify(data.message, data.status_code);
+    }
   };
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: handleDrop,
-    accept: 'image/*',
-    multiple: false,
-  });
-  
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormFields((prevState) => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
   return (
     <ThemeProvider theme={myTheme}>
       <main className={classes.content}>
@@ -140,24 +158,28 @@ const Create = () => {
                 </Typography>
                 <form onSubmit={handleSubmit}>
                     <TextField
-                    type="text"
-                    label="Name"
-                    variant="outlined"
-                    fullWidth
-                    className={classes.textField}
-                    value={name}
-                    onChange={handleNameChange}
-                    style={{ marginBottom: '1rem' }}
+                      name="name"
+                      type="text"
+                      label="Name"
+                      variant="outlined"
+                      fullWidth
+                      className={classes.textField}
+                      value={formFields.name}
+                      onChange={handleInputChange}
+                      style={{ marginBottom: '1rem' }}
+                      required
                     />
                     <TextField
-                    type="number"
-                    label="Quantity"
-                    variant="outlined"
-                    fullWidth
-                    className={classes.textField}
-                    value={quantity}
-                    onChange={handleQuantityChange}
-                    style={{ marginBottom: '1rem' }}
+                      name="quantity"
+                      type="number"
+                      label="Quantity"
+                      variant="outlined"
+                      fullWidth
+                      className={classes.textField}
+                      value={formFields.quantity}
+                      style={{ marginBottom: '1rem' }}
+                      onChange={handleInputChange}
+                      required
                     />
                     
                     <ImageGalleryUploader

@@ -7,6 +7,7 @@ use App\Http\Traits\ApiTrait;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 
 class InventoryController extends Controller
 {
@@ -29,7 +30,11 @@ class InventoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Log::info("Inventory Store",$request->all());
+        
+        $this->data = $request->all();
+        $this->apiSuccess();
+        return $this->apiOutput(Response::HTTP_OK, "List of 'inventories ...");  
     }
 
     /**

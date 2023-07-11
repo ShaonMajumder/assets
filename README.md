@@ -17,8 +17,11 @@ yarn add react-bootstrap
 yarn add @material-ui/core
 yarn add react-router-dom
 yarn add react-icons
-yarn add react-dropzone
 yarn add react-toastify
+yarn add convert-form-data
+yarn add keycloak-js
+yarn add axios
+yarn add react-router
 
 # Backend
 composer create-project --prefer-dist laravel/laravel inventory-api

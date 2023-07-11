@@ -7,15 +7,27 @@ export const notify = (message, type) => {
         case SUCCESS:
             toast.success(message, {
                 position: toast.POSITION.TOP_RIGHT,
-                theme: "colored",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
             });
-            alert(message)
             break;
         case ERROR:
             toast.error(message, {
                 position: toast.POSITION.TOP_RIGHT,
                 theme: "colored",
             });
+            toast.error(message, {
+                position: toast.POSITION.TOP_RIGHT,
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+            
             alert(message);
             break;
         case INFO:
@@ -23,18 +35,39 @@ export const notify = (message, type) => {
                 position: toast.POSITION.TOP_RIGHT,
                 theme: "colored",
             });
+            toast.info(message, {
+                position: toast.POSITION.TOP_RIGHT,
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
             break;
         case WARNING:
             toast.warn(message, {
                 position: toast.POSITION.TOP_RIGHT,
                 theme: "colored",
             });
+            toast.warn(message, {
+                position: toast.POSITION.TOP_RIGHT,
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
             break;
         default:
             toast.info(message, {
                 position: toast.POSITION.TOP_RIGHT,
-                theme: "colored",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
             });
+            
     }
 
 }

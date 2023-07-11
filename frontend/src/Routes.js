@@ -4,7 +4,6 @@ import InventoryDashboard from './views/Admin/InventoryDashboard';
 import Login from './views/Login';
 import { FaDashcube } from 'react-icons/fa';
 import CreateInventory from './views/Admin/CreateInventory';
-import Create from './views/Admin/Inventory/Create';
 import Test from './views/Admin/Inventory/Test';
 
 const routes = [
