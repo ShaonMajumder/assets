@@ -18,3 +18,37 @@ export const postInventory = async (value) => {
     }
     return response;
 }
+
+export const listInventory = async () => {
+    let response = {};
+    try {
+        const axiosClient = HttpService.getAxiosClient();
+        response = await axiosClient.get(`${process.env.REACT_APP_API_URL}/inventory`);
+        
+        if (response.status !== HTTP_OK) {
+            throw new Error(`Error! status: ${response.statusText}`);
+        }
+    } catch (err) {
+        console.log(err);
+        response = err.response;
+        
+    }
+    return response;
+}
+
+export const deleteInventory = async (id) => {
+    let response = {};
+    try {
+        const axiosClient = HttpService.getAxiosClient();
+        response = await axiosClient.delete(`${process.env.REACT_APP_API_URL}/inventory/${id}`);
+        
+        if (response.status !== HTTP_OK) {
+            throw new Error(`Error! status: ${response.statusText}`);
+        }
+    } catch (err) {
+        console.log(err);
+        response = err.response;
+        
+    }
+    return response;
+}

@@ -32,6 +32,8 @@ php artisan make:model Inventory
 php artisan db:seed --class=InventorySeeder #error
 php artisan make:resource InventoryResource
 php artisan make:resource InventoryResourceCollection --collection
+php artisan make:request InventoryValidation
+
 ```
 
 ## Run

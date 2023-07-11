@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\InventoryValidation;
 use App\Http\Resources\InventoryResource;
 use App\Http\Traits\ApiTrait;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class InventoryController extends Controller
@@ -28,13 +30,26 @@ class InventoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(InventoryValidation $request)
     {
-        Log::info("Inventory Store",$request->all());
-        
-        $this->data = $request->all();
-        $this->apiSuccess();
-        return $this->apiOutput(Response::HTTP_OK, "List of 'inventories ...");  
+        try {
+            DB::beginTransaction();
+    
+            $inventory = new Inventory();
+            $inventory->name = $request->name;
+            $inventory->quantity = $request->quantity;
+    
+            $inventory->save();
+    
+            DB::commit();
+            Log::info("Inventory Store",$request->all());
+            $this->data = $request->all();
+            $this->apiSuccess();
+            return $this->apiOutput(Response::HTTP_CREATED, 'Inventory created successfully');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return $this->apiOutput(Response::HTTP_INTERNAL_SERVER_ERROR, 'Error occurred during inventory creation');
+        }
     }
 
     /**
@@ -58,6 +73,28 @@ class InventoryController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            DB::beginTransaction();
+
+            $inventory = Inventory::find($id);
+
+            if (!$inventory) {
+                return $this->apiOutput(Response::HTTP_NOT_FOUND, 'Inventory not found');
+            }
+
+            $inventory->delete();
+
+            DB::commit();
+
+            $responseList = $this->index();
+            $listInventory = json_decode($responseList->getContent());
+            $this->data = $listInventory->data;
+
+            return $this->apiOutput(Response::HTTP_OK, 'Inventory deleted successfully');
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return $this->apiOutput(Response::HTTP_INTERNAL_SERVER_ERROR, 'Error occurred during inventory deletion');
+        }
     }
 }
