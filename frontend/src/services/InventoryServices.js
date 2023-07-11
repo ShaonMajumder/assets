@@ -1,4 +1,4 @@
-import { HTTP_OK } from "../utils/HttpStatusCode";
+import { HTTP_OK, HTTP_CREATED } from "../utils/HttpStatusCode";
 import HttpService from "./HttpService";
 
 
@@ -7,6 +7,24 @@ export const postInventory = async (value) => {
     try {
         const axiosClient = HttpService.getAxiosClient();
         response = await axiosClient.post(`${process.env.REACT_APP_API_URL}/inventory`,value);
+        
+        console.log("debugging response",response)
+        if (response.status !== HTTP_CREATED) {
+            throw new Error(`Error! status: ${response.statusText}`);
+        }
+    } catch (err) {
+        console.log(err);
+        response = err.response;
+        
+    }
+    return response;
+}
+
+export const updateInventory = async (id, value) => {
+    let response = {};
+    try {
+        const axiosClient = HttpService.getAxiosClient();
+        response = await axiosClient.post(`${process.env.REACT_APP_API_URL}/inventory/${id}`,value);
         
         if (response.status !== HTTP_OK) {
             throw new Error(`Error! status: ${response.statusText}`);
@@ -24,6 +42,23 @@ export const listInventory = async () => {
     try {
         const axiosClient = HttpService.getAxiosClient();
         response = await axiosClient.get(`${process.env.REACT_APP_API_URL}/inventory`);
+        
+        if (response.status !== HTTP_OK) {
+            throw new Error(`Error! status: ${response.statusText}`);
+        }
+    } catch (err) {
+        console.log(err);
+        response = err.response;
+        
+    }
+    return response;
+}
+
+export const getInventory = async (id) => {
+    let response = {};
+    try {
+        const axiosClient = HttpService.getAxiosClient();
+        response = await axiosClient.get(`${process.env.REACT_APP_API_URL}/inventory/${id}`);
         
         if (response.status !== HTTP_OK) {
             throw new Error(`Error! status: ${response.statusText}`);

@@ -323,7 +323,7 @@ return (
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
 
-                  style={{ userSelect: 'none' }}
+                  style={{ userSelect: 'none', display: 'flex', justifyContent: 'center' }}
                 >
                   {
                     (imageArray2D[rowIndex2D] === undefined || imageArray2D[rowIndex2D].length == 0) ? 

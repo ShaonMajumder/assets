@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('inventory_attachments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('inventory_id');
-            // $table->foreign('inventory_id')->references('id')->on('inventory')->onDelete('cascade');
-            $table->string('filename');
+            $table->string('file_path');
+            $table->unsignedBigInteger('batch_id')->nullable();
             $table->timestamps();
+            // $table->foreign('inventory_id')->references('id')->on('inventories')->onDelete('cascade');
+            // $table->foreign('batch_id')->references('id')->on('batches')->onDelete('cascade');
         });
     }
 

@@ -6,6 +6,10 @@ import { HTTP_OK } from '../../utils/HttpStatusCode';
 import { notify } from '../../utils/Toast';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import { useNavigate } from 'react-router-dom';
+import ImageGalleryUploader from '../../components/ImageGalleryUploader/ImageGalleryUploader';
+import { fetchDBImages2D } from '../../components/ImageGalleryUploader/ImageGalleryUploaderService';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -21,22 +25,31 @@ const useStyles = makeStyles((theme) => ({
 
 const InventoryTable = () => {
   const classes = useStyles();
+  const navigate = useNavigate();
   const [inventoryData, setInventoryData] = useState([]);
-  // const inventoryData = [
-  //   { id: 1, name: 'Item 1', category: 'Category A', quantity: 10 },
-  //   { id: 2, name: 'Item 2', category: 'Category B', quantity: 5 },
-  //   { id: 3, name: 'Item 3', category: 'Category C', quantity: 15 },
-  // ];
+  const [imageViewerArray2D, setImageViewerArray2D] = useState([]);
 
   useEffect(() => {
     fetchInventories();
   },[]);
+
+  const setImagesOnLoading = async (inventoryData) => {
+    let images2D = [];
+    for(let i in inventoryData){
+      console.log(inventoryData[i])
+      console.log(inventoryData[i]?.files)
+      images2D[i] = inventoryData[i]?.files;
+    }
+    let images_url = `${process.env.REACT_APP_API_URL}/inventory/get-image/?fileName=`;
+    await fetchDBImages2D(images2D,images_url,imageViewerArray2D,setImageViewerArray2D);
+  }
 
   const fetchInventories = async () => {
     const {data,status} = await listInventory();
     let inventoryData = data.data;
     if (status === HTTP_OK) {
       setInventoryData(inventoryData)
+      setImagesOnLoading(inventoryData);
     } else {
       notify(data.message, data.status_code);
     }
@@ -70,17 +83,29 @@ const InventoryTable = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {inventoryData.map((item) => (
+              {inventoryData.map((item,index) => (
                 <TableRow key={item.id}>
                   <TableCell>{item.id}</TableCell>
                   <TableCell>{item.name}</TableCell>
                   <TableCell>{item.quantity}</TableCell>
-                  <TableCell></TableCell>
+                  <TableCell>
+                    <ImageGalleryUploader
+                      imageUploader={false}
+                      is2D={true}
+                      imageArray2D={imageViewerArray2D} 
+                      rowIndex2D={index}
+                    />
+                  </TableCell>
                   <TableCell>
                     <IconButton aria-label="delete" onClick={()=> {
                       handleDelete(item.id);
                     }}>
                       <DeleteIcon />
+                    </IconButton>
+                    <IconButton aria-label="edit" onClick={()=> {
+                      navigate(`/inventory/update/${item.id}`);
+                    }}>
+                      <EditIcon />
                     </IconButton>
                   </TableCell>
                 </TableRow>

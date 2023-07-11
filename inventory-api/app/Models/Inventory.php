@@ -9,4 +9,12 @@ class Inventory extends Model
 {
     use HasFactory;
     protected $fillable = ['name'];
+
+    /**
+     * @return hasMany
+     */
+    public function inventoryAttachment()
+    {
+        return $this->hasMany(InventoryAttachment::class, "inventory_id", "id");
+    }
 }

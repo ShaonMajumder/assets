@@ -33,7 +33,7 @@ php artisan db:seed --class=InventorySeeder #error
 php artisan make:resource InventoryResource
 php artisan make:resource InventoryResourceCollection --collection
 php artisan make:request InventoryValidation
-
+php artisan make:model InventoryAttachment --migration
 ```
 
 ## Run

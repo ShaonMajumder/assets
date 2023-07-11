@@ -14,7 +14,8 @@ export const convertImageUrlToFile = async (imageUrl) => {
 export const fetchDBImages = async (images,images_url,imageViewerArray,setImageViewerArray) => {
   let  fileObj = [];
   images.map((element, index) =>{
-    fileObj.push(`${images_url}${element.file}`)
+    console.log('element',`${images_url}${element.files}`)
+    fileObj.push(`${images_url}${element.files}`)
   })
   setImageViewerArray([...imageViewerArray, ...fileObj ])
 }
@@ -68,7 +69,8 @@ export const fetchDBImages2D = async (images2D,images_url,imageViewerArray2D,set
   images2D.map((images, row) =>{
     fileObj.push([]);
     images.map((element, col) =>{
-      fileObj[row].push(`${images_url}${element.file}`)
+      console.log("element",element.file_path)
+      fileObj[row].push(`${images_url}${element.file_path}`)
     });
   })
   

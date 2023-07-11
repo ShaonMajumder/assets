@@ -24,7 +24,7 @@ class InventoryValidation extends FormRequest
         return [
             'name' => 'required|string',
             'quantity' => 'required|integer',
-            'files' => 'nullable',
+            'files/*' => 'nullable|file|mimes:jpg,jpeg,bmp,png'
         ];
     }
 }

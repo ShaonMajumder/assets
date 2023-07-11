@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { AppBar, Avatar, Card, CardContent, CardHeader, Toolbar,  } from '@material-ui/core';
-
-
 import {
   Container,
   Paper,
@@ -17,11 +15,12 @@ import {
 import ImageGalleryUploader from '../../../components/ImageGalleryUploader/ImageGalleryUploader';
 import {toast} from "react-toastify";
 import {jsonToFormdata} from 'convert-form-data';
-import { postInventory } from '../../../services/InventoryServices';
 import { HTTP_OK, HTTP_CREATED } from "../../../utils/HttpStatusCode";
 import { notify } from '../../../components/ImageGalleryUploader/Toast';
 import { SUCCESS } from '../../../components/ImageGalleryUploader/MessageConst';
 import { useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router';
+import { getInventory, updateInventory } from '../../../services/InventoryServices';
 
 const myTheme = createTheme({
   palette: {
@@ -72,7 +71,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Create = () => {
+const Update = () => {
+  const {id} = useParams();
   const navigate = useNavigate();
   const classes = useStyles();
   const [formFields, setFormFields] = useState({
@@ -83,6 +83,36 @@ const Create = () => {
   const [imageViewerArray, setImageViewerArray] = useState([]);
   const [imageFormdataArray, setImageFormdataArray] = useState([]);
   
+  useEffect(()=>{
+    fetchInventoryItem(id);
+  }, []);
+
+  const fetchInventoryItem = async (id) => {
+    const {data,status} = await getInventory(id);
+    let inventoryData = data.data;
+    console.log(inventoryData);
+    if (status === HTTP_OK) {
+      setFormFields({
+        name: inventoryData.name,
+        quantity: inventoryData.quantity,
+        files: null
+      })
+
+      // let images = data?.data?.requestOrder?.request_order_attachments ?? null;
+      // let images_url = `${process.env.REACT_APP_API_URL}/request_orders/get-image/?fileName=/`;
+      // await fetchEditDBImages(
+      //   images,
+      //   images_url,
+      //   imageViewerArray,
+      //   setImageViewerArray,
+      //   imageFormdataArray,
+      //   setImageFormdataArray
+      // );
+
+    } else {
+      notify(data.message, data.status_code);
+    }
+  }
 
   const uploadMultipleFiles = (files) => {
     let fileObj = [];
@@ -122,8 +152,8 @@ const Create = () => {
     let formDataObject = new FormData();
     formDataObject = jsonToFormdata("", formFields, formDataObject);
     
-    const {data,status} = await postInventory(formDataObject);    
-    if (status === HTTP_CREATED) {
+    const {data,status} = await updateInventory(id, formDataObject);    
+    if (status === HTTP_OK) {
       notify(formFields.name+" Inventory Created!", SUCCESS);
       navigate('/');
     } else {
@@ -154,7 +184,7 @@ const Create = () => {
             <Container>
                 <Paper className={classes.paper} elevation={3}>
                 <Typography variant="h5" align="center" gutterBottom>
-                    Create Inventory Item
+                    Update Inventory Item
                 </Typography>
                 <form onSubmit={handleSubmit}>
                     <TextField
@@ -216,4 +246,4 @@ const Create = () => {
   );
 };
 
-export default Create;
+export default Update;

@@ -20,6 +20,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix('inventory')->group(function () {
+    Route::get('/get-image',[InventoryController::class, 'serveImage']);
+
     Route::get('/', [InventoryController::class, 'index']);
     Route::post('/', [InventoryController::class, 'store']);
     Route::get('/{id}', [InventoryController::class, 'show']);

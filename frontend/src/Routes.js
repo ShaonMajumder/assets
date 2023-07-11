@@ -4,6 +4,7 @@ import InventoryDashboard from './views/Admin/InventoryDashboard';
 import Login from './views/Login';
 import { FaDashcube } from 'react-icons/fa';
 import CreateInventory from './views/Admin/CreateInventory';
+import UpdateInventory from './views/Admin/UpdateInventory';
 import Test from './views/Admin/Inventory/Test';
 
 const routes = [
@@ -36,6 +37,14 @@ const routes = [
     name: 'Add into Inventory',
     path: '/inventory/create',
     component: <CreateInventory />,
+    sideBar: false,
+    subNav: [],
+    permission: true,
+  },
+  {
+    name: 'Edit Inventory',
+    path: '/inventory/update/:id',
+    component: <UpdateInventory />,
     sideBar: false,
     subNav: [],
     permission: true,

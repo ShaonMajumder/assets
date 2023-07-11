@@ -72,11 +72,13 @@ class InventoryResource extends JsonResource
         // object or null
         // array or empty array []
         
+        
         $this->field_items = [
             "id"                        => $this->id,
             "uuid"                      => $this->uuid,
             "name"                      => $this->name,
             "quantity"                  => $this->quantity,
+            "files"                     => $this->inventoryAttachment,
         ];
 
         if($this->rename_fields != [] ){
