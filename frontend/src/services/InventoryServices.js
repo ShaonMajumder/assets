@@ -24,7 +24,7 @@ export const updateInventory = async (id, value) => {
     let response = {};
     try {
         const axiosClient = HttpService.getAxiosClient();
-        response = await axiosClient.post(`${process.env.REACT_APP_API_URL}/inventory/${id}`,value);
+        response = await axiosClient.put(`${process.env.REACT_APP_API_URL}/inventory/${id}`,value);
         
         if (response.status !== HTTP_OK) {
             throw new Error(`Error! status: ${response.statusText}`);
@@ -86,4 +86,34 @@ export const deleteInventory = async (id) => {
         
     }
     return response;
+}
+
+export const bulkFileDownloader = async (export_type) => {
+    let response = {};
+    try {
+        const axiosClient = HttpService.getAxiosClient();
+        response = await axiosClient.get(`${process.env.REACT_APP_API_URL}/inventory/download/${export_type}/bulk`);
+        if (response.status !== HTTP_OK) {
+            throw new Error(`Error! status: ${response.statusText}`);
+        }
+    } catch (err) {
+        console.log(err);
+        response = err.response;
+    }
+    return response; 
+}
+
+export const fileDownloader = async (id,export_type) => {
+    let response = {};
+    try {
+        const axiosClient = HttpService.getAxiosClient();
+        response = await axiosClient.get(`${process.env.REACT_APP_API_URL}/inventory/download/${export_type}/${id}`);
+        if (response.status !== HTTP_OK) {
+            throw new Error(`Error! status: ${response.statusText}`);
+        }
+    } catch (err) {
+        console.log(err);
+        response = err.response;
+    }
+    return response; 
 }

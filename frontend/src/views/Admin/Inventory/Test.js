@@ -10,19 +10,19 @@ const Test = () => {
   const [imageFormdataArray, setImageFormdataArray] = useState([]);
 
   const uploadMultipleFiles = (files) => {
-    let fileObj = [];
-    setImageFormdataArray([...imageFormdataArray, ...files]);
-    for (let i = 0; i < files.length; i++) {
-      fileObj.push(URL.createObjectURL(files[i]));
-    }
-    setImageViewerArray([...imageViewerArray, ...fileObj]);
+    setImageFormdataArray(([...prevImageFormdataArray]) => [...prevImageFormdataArray, ...files] );
+    
+    setImageViewerArray(([...prevImageViewerArray]) => [
+      ...prevImageViewerArray,
+      ...Array.from(files, (file) => URL.createObjectURL(file))
+    ]);
   };
 
+  
+
   const handleRemoveImage = (id) => {
-    let objA = imageViewerArray.filter((img, i) => i !== id);
-    let objB = imageFormdataArray.filter((imgs, idx) => idx !== id);
-    setImageViewerArray(objA);
-    setImageFormdataArray(objB);
+    setImageViewerArray(([...prevImageViewerArray]) => prevImageViewerArray.filter((_, i) => i !== id) );
+    setImageFormdataArray(([...prevImageFormdataArray]) => prevImageFormdataArray.filter((_, i) => i !== id) );
   };
 
   

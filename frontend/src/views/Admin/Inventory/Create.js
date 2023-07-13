@@ -85,12 +85,12 @@ const Create = () => {
   
 
   const uploadMultipleFiles = (files) => {
-    let fileObj = [];
-    setImageFormdataArray([...imageFormdataArray, ...files]);
-    for (let i = 0; i < files.length; i++) {
-      fileObj.push(URL.createObjectURL(files[i]));
-    }
-    setImageViewerArray([...imageViewerArray, ...fileObj]);
+    setImageFormdataArray(([...prevImageFormdataArray]) => [...prevImageFormdataArray, ...files] );
+    
+    setImageViewerArray(([...prevImageViewerArray]) => [
+      ...prevImageViewerArray,
+      ...Array.from(files, (file) => URL.createObjectURL(file))
+    ]);
     
     setFormFields((prevState) => ({
       ...prevState,
@@ -99,14 +99,9 @@ const Create = () => {
   };
 
   const handleRemoveImage = (id) => {
-    let objA = imageViewerArray.filter((img, i) => i !== id);
-    let objB = imageFormdataArray.filter((imgs, idx) => idx !== id);
-    setImageViewerArray(objA);
+    setImageViewerArray(([...prevImageViewerArray]) => prevImageViewerArray.filter((_, i) => i !== id) );
+    let objB = imageFormdataArray.filter((_, i) => i !== id);
     setImageFormdataArray(objB);
-    toast.success('erro', {
-      position: toast.POSITION.TOP_RIGHT,
-      theme: "colored",
-    });
 
     setFormFields((prevState) => ({
       ...prevState,

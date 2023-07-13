@@ -12,7 +12,7 @@ import {
   createTheme
 } from '@material-ui/core';
 
-import ImageGalleryUploader from '../../../components/ImageGalleryUploader/ImageGalleryUploader';
+import ImageGalleryUploader, { fetchEditDBImages } from '../../../components/ImageGalleryUploader/ImageGalleryUploader';
 import {toast} from "react-toastify";
 import {jsonToFormdata} from 'convert-form-data';
 import { HTTP_OK, HTTP_CREATED } from "../../../utils/HttpStatusCode";
@@ -78,7 +78,8 @@ const Update = () => {
   const [formFields, setFormFields] = useState({
     name: '',
     quantity: '',
-    files: null
+    files: null,
+    _method : "_PUT"
   });
   const [imageViewerArray, setImageViewerArray] = useState([]);
   const [imageFormdataArray, setImageFormdataArray] = useState([]);
@@ -98,16 +99,19 @@ const Update = () => {
         files: null
       })
 
-      // let images = data?.data?.requestOrder?.request_order_attachments ?? null;
-      // let images_url = `${process.env.REACT_APP_API_URL}/request_orders/get-image/?fileName=/`;
-      // await fetchEditDBImages(
-      //   images,
-      //   images_url,
-      //   imageViewerArray,
-      //   setImageViewerArray,
-      //   imageFormdataArray,
-      //   setImageFormdataArray
-      // );
+      console.log(inventoryData.files)
+
+      let images = inventoryData.files ?? null;
+      let images_url = `${process.env.REACT_APP_API_URL}/inventory/get-image/?fileName=/`;
+      console.log("images url",images)
+      await fetchEditDBImages({
+        images: images,
+        images_url: images_url,
+        imageViewerArray: imageViewerArray,
+        setImageViewerArray: setImageViewerArray,
+        imageFormdataArray: imageFormdataArray,
+        setImageFormdataArray: setImageFormdataArray
+      });
 
     } else {
       notify(data.message, data.status_code);
@@ -115,12 +119,12 @@ const Update = () => {
   }
 
   const uploadMultipleFiles = (files) => {
-    let fileObj = [];
-    setImageFormdataArray([...imageFormdataArray, ...files]);
-    for (let i = 0; i < files.length; i++) {
-      fileObj.push(URL.createObjectURL(files[i]));
-    }
-    setImageViewerArray([...imageViewerArray, ...fileObj]);
+    setImageFormdataArray(([...prevImageFormdataArray]) => [...prevImageFormdataArray, ...files] );
+   
+    setImageViewerArray(([...prevImageViewerArray]) => [
+      ...prevImageViewerArray,
+      ...Array.from(files, (file) => URL.createObjectURL(file))
+    ]);
     
     setFormFields((prevState) => ({
       ...prevState,
@@ -129,14 +133,9 @@ const Update = () => {
   };
 
   const handleRemoveImage = (id) => {
-    let objA = imageViewerArray.filter((img, i) => i !== id);
-    let objB = imageFormdataArray.filter((imgs, idx) => idx !== id);
-    setImageViewerArray(objA);
+    setImageViewerArray(([...prevImageViewerArray]) => prevImageViewerArray.filter((_, i) => i !== id) );
+    let objB = imageFormdataArray.filter((_, i) => i !== id);
     setImageFormdataArray(objB);
-    toast.success('erro', {
-      position: toast.POSITION.TOP_RIGHT,
-      theme: "colored",
-    });
 
     setFormFields((prevState) => ({
       ...prevState,
@@ -148,13 +147,18 @@ const Update = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // setFormFields((prevState)=>({
+    //   ...prevState,
+    //   _method: "PUT"
+    // }))
+    console.log("_method",)
     
     let formDataObject = new FormData();
     formDataObject = jsonToFormdata("", formFields, formDataObject);
     
     const {data,status} = await updateInventory(id, formDataObject);    
     if (status === HTTP_OK) {
-      notify(formFields.name+" Inventory Created!", SUCCESS);
+      notify(formFields.name+" Inventory Updated!", SUCCESS);
       navigate('/');
     } else {
       notify(data.message, data.status_code);
@@ -232,7 +236,7 @@ const Update = () => {
                     fullWidth
                     className={classes.button}
                     >
-                    Create
+                    Update
                     </Button>
                 </form>
                 </Paper>

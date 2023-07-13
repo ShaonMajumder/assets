@@ -22,6 +22,7 @@ yarn add convert-form-data
 yarn add keycloak-js
 yarn add axios
 yarn add react-router
+yarn add file-saver
 
 # Backend
 composer create-project --prefer-dist laravel/laravel inventory-api
@@ -34,6 +35,14 @@ php artisan make:resource InventoryResource
 php artisan make:resource InventoryResourceCollection --collection
 php artisan make:request InventoryValidation
 php artisan make:model InventoryAttachment --migration
+composer require phpoffice/phpspreadsheet
+composer require barryvdh/laravel-dompdf
+
+#after editing composer.json files for helpers class
+php artisan clear-compiled 
+composer dump-autoload
+php artisan optimize
+
 ```
 
 ## Run
