@@ -56,10 +56,8 @@ class InventoryController extends Controller
             $inventory = new Inventory();
             $inventory->name = $request->name;
             $inventory->quantity = $request->quantity;
-    
+            $inventory->batch_id = 1;
             $inventory->save();
-
-            
 
             $this->inventoryAttachmentService->create($request->all(), $inventory);
     
@@ -93,7 +91,7 @@ class InventoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(InventoryValidation $request, string $id)
     {   
         try {
             DB::beginTransaction();
@@ -123,7 +121,11 @@ class InventoryController extends Controller
             
             $inventory->name = $request->name;
             $inventory->quantity = $request->quantity;
+            $inventory->batch_id = $inventory->batch_id + 1;
             $inventory->save();
+
+            $this->inventoryAttachmentService->dumpPreviousBatch($inventory);
+            $this->inventoryAttachmentService->create($request->all(), $inventory);
 
             DB::commit();
 

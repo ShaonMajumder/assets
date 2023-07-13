@@ -16,7 +16,10 @@ return new class extends Migration
             $table->string('uuid')->unique()->nullable();
             $table->string('name');
             $table->string('quantity');
-            $table->timestamps();
+            $table->unsignedBigInteger('batch_id')->unique()->nullable();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->nullable()->useCurrentOnUpdate();
+            $table->softDeletes();
         });
     }
 

@@ -16,7 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('inventory_id');
             $table->string('file_path');
             $table->unsignedBigInteger('batch_id')->nullable();
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->nullable()->useCurrentOnUpdate();
+            
             // $table->foreign('inventory_id')->references('id')->on('inventories')->onDelete('cascade');
             // $table->foreign('batch_id')->references('id')->on('batches')->onDelete('cascade');
         });
