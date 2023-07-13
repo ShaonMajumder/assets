@@ -23,6 +23,8 @@ yarn add keycloak-js
 yarn add axios
 yarn add react-router
 yarn add file-saver
+yarn add @mui/icons-material @mui/material @emotion/styled @emotion/react
+
 
 # Backend
 composer create-project --prefer-dist laravel/laravel inventory-api
@@ -46,6 +48,7 @@ php artisan optimize
 php artisan make:migration add_softdelete_into_inventory_attachments_table --table=inventory_attachments
 php artisan make:migration add_batch_id_into_inventories_table --table=inventories
 php artisan make:migration add_timestamp_update_into_inventory_attachments_table --table=inventory_attachments
+composer require awobaz/compoships
 ```
 
 ## Run

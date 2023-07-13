@@ -54,6 +54,23 @@ export const listInventory = async () => {
     return response;
 }
 
+export const listInventoryHistory = async (id) => {
+    let response = {};
+    try {
+        const axiosClient = HttpService.getAxiosClient();
+        response = await axiosClient.get(`${process.env.REACT_APP_API_URL}/inventory/history/${id}`);
+        
+        if (response.status !== HTTP_OK) {
+            throw new Error(`Error! status: ${response.statusText}`);
+        }
+    } catch (err) {
+        console.log(err);
+        response = err.response;
+        
+    }
+    return response;
+}
+
 export const getInventory = async (id) => {
     let response = {};
     try {

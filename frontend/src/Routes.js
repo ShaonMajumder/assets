@@ -1,6 +1,8 @@
 import React from 'react';
 import Dashboard from './views/Admin/Dashboard';
 import InventoryDashboard from './views/Admin/InventoryDashboard';
+import InventoryHistory from './views/Admin/InventoryHistory';
+
 import Login from './views/Login';
 import { FaDashcube } from 'react-icons/fa';
 import CreateInventory from './views/Admin/CreateInventory';
@@ -45,6 +47,15 @@ const routes = [
     name: 'Edit Inventory',
     path: '/inventory/update/:id',
     component: <UpdateInventory />,
+    sideBar: false,
+    subNav: [],
+    permission: true,
+  },
+  {
+    name: 'Inventory History',
+    path: '/inventory/history/:id',
+    component: <InventoryHistory />,
+    icon: <FaDashcube />,
     sideBar: false,
     subNav: [],
     permission: true,

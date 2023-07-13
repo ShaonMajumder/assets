@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Paper, Typography, Table, TableContainer, TableHead, TableBody, TableRow, TableCell } from '@material-ui/core';
-import { listInventory, deleteInventory, fileDownloader, bulkFileDownloader } from '../../services/InventoryServices';
+import { listInventoryHistory, deleteInventory, fileDownloader, bulkFileDownloader } from '../../services/InventoryServices';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import { RiFileExcel2Line } from "react-icons/ri";
-import { GrDocumentPdf, GrAdd, GrHistory } from "react-icons/gr";
+import { GrDocumentPdf, GrAdd } from "react-icons/gr";
 import ImageGalleryUploader from '../../components/ImageGalleryUploader/ImageGalleryUploader';
 import { fetchDBImages2D } from '../../components/ImageGalleryUploader/ImageGalleryUploaderService';
 import {
@@ -16,6 +16,9 @@ import {
 } from '../../utils/Files';
 import { HTTP_OK } from '../../utils/HttpStatusCode';
 import { notify } from '../../utils/Toast';
+import { useParams } from 'react-router';
+
+import HistoryIcon from '@mui/icons-material/History';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -42,14 +45,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const InventoryTable = () => {
+const InventoryTableHistory = () => {
+  const {id} = useParams();
+  console.log("got history for invetory for id ",id);
+
   const classes = useStyles();
   const navigate = useNavigate();
   const [inventoryData, setInventoryData] = useState([]);
   const [imageViewerArray2D, setImageViewerArray2D] = useState([]);
 
   useEffect(() => {
-    fetchInventories();
+    fetchInventoriesHistory(id);
   },[]);
 
   const setImagesOnLoading = async (inventoryData) => {
@@ -68,8 +74,8 @@ const InventoryTable = () => {
     });
   }
 
-  const fetchInventories = async () => {
-    const {data,status} = await listInventory();
+  const fetchInventoriesHistory = async () => {
+    const {data,status} = await listInventoryHistory(id);
     let inventoryData = data.data;
     if (status === HTTP_OK) {
       setInventoryData(inventoryData)
@@ -108,7 +114,6 @@ const InventoryTable = () => {
   const handleDownloadExcel = async (id) => {
     const {data,status} = await fileDownloader(id, "excel");
     if (status === HTTP_OK) {
-      console.log(data)
       const fileContent = data?.data?.file;
       const file_name = data?.data?.file_name;
       const file_type = data?.data?.file_type;
@@ -199,21 +204,6 @@ const InventoryTable = () => {
                     />
                   </TableCell>
                   <TableCell>
-                    <IconButton aria-label="delete" onClick={()=> {
-                      handleDelete(item.id);
-                    }}>
-                      <DeleteIcon />
-                    </IconButton>
-                    <IconButton aria-label="edit" onClick={()=> {
-                      navigate(`/inventory/update/${item.id}`);
-                    }}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton aria-label="history" onClick={()=> {
-                      navigate(`/inventory/history/${item.id}`);
-                    }}>
-                      <GrHistory />
-                    </IconButton>
                     <IconButton 
                       aria-label="Download PDF" 
                       onClick={() => handleDownloadPDF(item.id) }
@@ -237,4 +227,4 @@ const InventoryTable = () => {
   );
 };
 
-export default InventoryTable;
+export default InventoryTableHistory;
