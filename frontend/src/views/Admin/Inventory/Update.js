@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { AppBar, Avatar, Card, CardContent, CardHeader, Toolbar,  } from '@material-ui/core';
 import {
   Container,
   Paper,
@@ -13,7 +12,6 @@ import {
 } from '@material-ui/core';
 
 import ImageGalleryUploader, { fetchEditDBImages } from '../../../components/ImageGalleryUploader/ImageGalleryUploader';
-import {toast} from "react-toastify";
 import {jsonToFormdata} from 'convert-form-data';
 import { HTTP_OK, HTTP_CREATED } from "../../../utils/HttpStatusCode";
 import { notify } from '../../../components/ImageGalleryUploader/Toast';
@@ -76,10 +74,10 @@ const Update = () => {
   const navigate = useNavigate();
   const classes = useStyles();
   const [formFields, setFormFields] = useState({
+    _method : 'PUT',
     name: '',
     quantity: '',
     files: null,
-    _method : "_PUT"
   });
   const [imageViewerArray, setImageViewerArray] = useState([]);
   const [imageFormdataArray, setImageFormdataArray] = useState([]);
@@ -91,20 +89,12 @@ const Update = () => {
   const fetchInventoryItem = async (id) => {
     const {data,status} = await getInventory(id);
     let inventoryData = data.data;
-    console.log(inventoryData);
     if (status === HTTP_OK) {
-      setFormFields({
-        name: inventoryData.name,
-        quantity: inventoryData.quantity,
-        files: null
-      })
-
-      console.log(inventoryData.files)
-
+      
+      console.log("inventoryData.files",inventoryData.files)
       let images = inventoryData.files ?? null;
       let images_url = `${process.env.REACT_APP_API_URL}/inventory/get-image/?fileName=/`;
-      console.log("images url",images)
-      await fetchEditDBImages({
+      let im = await fetchEditDBImages({
         images: images,
         images_url: images_url,
         imageViewerArray: imageViewerArray,
@@ -112,6 +102,15 @@ const Update = () => {
         imageFormdataArray: imageFormdataArray,
         setImageFormdataArray: setImageFormdataArray
       });
+
+      console.log("imageFormdataArray on loading...",im)
+
+      setFormFields((prevFormFields)=>({
+        ...prevFormFields,
+        name: inventoryData.name,
+        quantity: inventoryData.quantity,
+      }))
+
 
     } else {
       notify(data.message, data.status_code);
@@ -143,18 +142,15 @@ const Update = () => {
     }));
   };
 
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // setFormFields((prevState)=>({
-    //   ...prevState,
-    //   _method: "PUT"
-    // }))
-    console.log("_method",)
     
     let formDataObject = new FormData();
-    formDataObject = jsonToFormdata("", formFields, formDataObject);
+    let submissionData = {
+      ...formFields,
+      files : imageFormdataArray
+    }
+    formDataObject = jsonToFormdata("", submissionData, formDataObject);
     
     const {data,status} = await updateInventory(id, formDataObject);    
     if (status === HTTP_OK) {
@@ -176,7 +172,6 @@ const Update = () => {
   return (
     <ThemeProvider theme={myTheme}>
       <main className={classes.content}>
-
         
         <Typography variant="h5" component="h1" align="left" className={classes.pageTitle} gutterBottom>
           Inventory

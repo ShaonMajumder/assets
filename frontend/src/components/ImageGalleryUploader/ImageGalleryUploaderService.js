@@ -91,6 +91,8 @@ export const fetchEditDBImages = async ({
   setImageFormdataArray([]);
   setImageViewerArray([...imageViewerArray, ...fileObjView ]);
   setImageFormdataArray([...imageFormdataArray, ...fileObjFD]);
+
+  return imageFormdataArray;
 }
 
 export const fetchEditDBImages2D = async ({

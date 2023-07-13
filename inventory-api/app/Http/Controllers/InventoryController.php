@@ -94,9 +94,7 @@ class InventoryController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-    {
-        return request()->all();
-        
+    {   
         try {
             DB::beginTransaction();
 
@@ -104,12 +102,27 @@ class InventoryController extends Controller
             if (!$inventory) {
                 return $this->apiOutput(Response::HTTP_NOT_FOUND, 'Inventory not found');
             }
+
+            // Check if any fields have been modified
+            $fieldsModified = false;
+            $fieldsToCheck = ['name', 'quantity'];
+
+            foreach ($fieldsToCheck as $field) {
+                if ($inventory->$field !== $request->$field) {
+                    $inventory->$field = $request->$field;
+                    $fieldsModified = true;
+                }
+            }
+
+            if ($fieldsModified) {
+                $inventory->save();
+            }else{
+                return $this->apiOutput(Response::HTTP_NOT_FOUND, 'No change was made ...');
+            }
+            
             
             $inventory->name = $request->name;
             $inventory->quantity = $request->quantity;
-
-            dd(request()->all());
-
             $inventory->save();
 
             DB::commit();
@@ -120,8 +133,7 @@ class InventoryController extends Controller
             return $this->apiOutput(Response::HTTP_OK, 'Inventory updated successfully');
         } catch (Exception $e) {
             DB::rollback();
-            dd($e->getMessage());
-            return $this->apiOutput(Response::HTTP_INTERNAL_SERVER_ERROR, 'Error occurred during inventory update');
+            return $this->apiOutput(Response::HTTP_INTERNAL_SERVER_ERROR, 'Error occurred during inventory update'.$e->getMessage());
         }
     }
 

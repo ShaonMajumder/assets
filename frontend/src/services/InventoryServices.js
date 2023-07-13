@@ -24,7 +24,7 @@ export const updateInventory = async (id, value) => {
     let response = {};
     try {
         const axiosClient = HttpService.getAxiosClient();
-        response = await axiosClient.put(`${process.env.REACT_APP_API_URL}/inventory/${id}`,value);
+        response = await axiosClient.post(`${process.env.REACT_APP_API_URL}/inventory/${id}`,value);
         
         if (response.status !== HTTP_OK) {
             throw new Error(`Error! status: ${response.statusText}`);
