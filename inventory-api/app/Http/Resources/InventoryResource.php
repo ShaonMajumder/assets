@@ -74,7 +74,7 @@ class InventoryResource extends JsonResource
         
         
         $this->field_items = [
-            "id"                        => $this->id,
+            "id"                        => $this->inventory_id,
             "uuid"                      => $this->uuid,
             "name"                      => $this->name,
             "quantity"                  => $this->quantity,

@@ -23,7 +23,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
  * Download Routes
  */
 Route::prefix('inventory/download')->group(function () {
-    Route::get('/get-image',[InventoryController::class, 'serveImage']);
     Route::get("/pdf/bulk", [InventoryController::class, 'downloadPDFBulk']);
     Route::get("/excel/bulk", [InventoryController::class, 'downloadExcelBulk']);
     Route::get("/pdf/{id}", [InventoryController::class, 'downloadPDFFiltered']);
@@ -31,9 +30,12 @@ Route::prefix('inventory/download')->group(function () {
 });
 
 Route::prefix('inventory')->group(function () {
+    Route::get('/get-image',[InventoryController::class, 'serveImage']);
+
     Route::get('/', [InventoryController::class, 'index']);
     Route::post('/', [InventoryController::class, 'store']);
     Route::get('/{id}', [InventoryController::class, 'show']);
+    Route::get('history/{id}', [InventoryController::class, 'history']);
     Route::put('/{id}', [InventoryController::class, 'update']);
     Route::delete('/{id}', [InventoryController::class, 'destroy']);
 });

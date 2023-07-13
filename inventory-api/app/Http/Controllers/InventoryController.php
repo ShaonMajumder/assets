@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Str;
 
 class InventoryController extends Controller
 {
@@ -59,6 +60,9 @@ class InventoryController extends Controller
             $inventory->batch_id = 1;
             $inventory->save();
 
+            $inventory->inventory_id = $inventory->id;
+            $inventory->save();
+
             $this->inventoryAttachmentService->create($request->all(), $inventory);
     
             DB::commit();
@@ -68,7 +72,7 @@ class InventoryController extends Controller
             return $this->apiOutput(Response::HTTP_CREATED, 'Inventory created successfully');
         } catch (\Exception $e) {
             DB::rollback();
-            return $this->apiOutput(Response::HTTP_INTERNAL_SERVER_ERROR, 'Error occurred during inventory creation');
+            return $this->apiOutput(Response::HTTP_INTERNAL_SERVER_ERROR, 'Error occurred during inventory creation '.$e->getMessage());
         }
     }
 
@@ -78,11 +82,29 @@ class InventoryController extends Controller
     public function show(string $id)
     {
         try {
-            $inventory = Inventory::findOrFail($id);
+            $inventory = Inventory::where('inventory_id',$id)->first();
             $inventoryItem = new InventoryResource($inventory);
             $this->data = $inventoryItem;
             $this->apiSuccess();
             return $this->apiOutput(Response::HTTP_OK, 'Inventory details retrieved successfully');
+        } catch (Exception $e) {
+            return $this->apiOutput(Response::HTTP_NOT_FOUND, 'Inventory not found');
+        }
+    }
+
+    /**
+     * Display the specified resource history.
+     */
+    public function history(string $id)
+    {
+        try {
+            $inventories = Inventory::withTrashed()
+                                    ->where('inventory_id',$id)
+                                    ->get();
+            $inventoryItems = InventoryResource::collection($inventories);
+            $this->data = $inventoryItems;
+            $this->apiSuccess();
+            return $this->apiOutput(Response::HTTP_OK, 'Inventory History details retrieved successfully');
         } catch (Exception $e) {
             return $this->apiOutput(Response::HTTP_NOT_FOUND, 'Inventory not found');
         }
@@ -100,6 +122,7 @@ class InventoryController extends Controller
             if (!$inventory) {
                 return $this->apiOutput(Response::HTTP_NOT_FOUND, 'Inventory not found');
             }
+            $previousInventory = $inventory;
 
             // Check if any fields have been modified
             $fieldsModified = false;
@@ -112,20 +135,19 @@ class InventoryController extends Controller
                 }
             }
 
-            if ($fieldsModified) {
-                $inventory->save();
-            }else{
+            if (!$fieldsModified) {
                 return $this->apiOutput(Response::HTTP_NOT_FOUND, 'No change was made ...');
             }
             
-            
-            $inventory->name = $request->name;
-            $inventory->quantity = $request->quantity;
-            $inventory->batch_id = $inventory->batch_id + 1;
-            $inventory->save();
+            $copyInventory = $previousInventory->replicate();
+            $this->inventoryAttachmentService->dumpPreviousBatch($previousInventory);
 
-            $this->inventoryAttachmentService->dumpPreviousBatch($inventory);
-            $this->inventoryAttachmentService->create($request->all(), $inventory);
+            $copyInventory->name = $request->name;
+            $copyInventory->quantity = $request->quantity;
+            $copyInventory->batch_id = $copyInventory->batch_id + 1;
+            $copyInventory->save();
+
+            $this->inventoryAttachmentService->create($request->all(), $copyInventory);
 
             DB::commit();
 

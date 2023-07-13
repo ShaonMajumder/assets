@@ -4,6 +4,7 @@ namespace App\Services\V1;
 
 use App\Helpers\FileUploader;
 use App\Helpers\StaticConstant;
+use App\Models\Inventory;
 use App\Models\InventoryAttachment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -27,14 +28,14 @@ class InventoryAttachmentService
         Log::info(json_encode($inventory));
         Log::info($request['files']);
 
-        if (count($request['files']))
+        if (count($request['files']) > 0)
         {
             foreach ($request['files'] as $image)
             {
                 $path = FileUploader::storeFile($image, StaticConstant::INVENTORY_ATTACHMENT_IMAGE_DIRECTORY);
 
                 $images[] = [
-                    "inventory_id" => $inventory->id,
+                    "inventory_id" => $inventory->inventory_id,
                     "batch_id" => $inventory->batch_id,
                     "file_path" => $path
                 ];
@@ -72,9 +73,13 @@ class InventoryAttachmentService
     }
 
     public function dumpPreviousBatch($inventory){
-        InventoryAttachment::where('inventory_id',$inventory->id)
-                            ->where('batch_id',$inventory->batch_id - 1)
-                            ->delete();
+        Inventory::where('inventory_id',$inventory->inventory_id)
+                 ->where('batch_id',$inventory->batch_id)
+                 ->delete();
+
+        InventoryAttachment::where('inventory_id',$inventory->inventory_id)
+                           ->where('batch_id',$inventory->batch_id )
+                           ->delete();
     }
 
     /**
