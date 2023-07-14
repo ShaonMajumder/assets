@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\LogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +25,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
  */
 Route::prefix('inventory/download')->group(function () {
     Route::get("/pdf/bulk", [InventoryController::class, 'downloadPDFBulk']);
+    Route::get("/excel/bulk", [InventoryController::class, 'downloadExcelBulk']);
+    Route::get("/pdf/{id}", [InventoryController::class, 'downloadPDFFiltered']);
+    Route::get("/excel/{id}", [InventoryController::class, 'downloadExcelFiltered']);
+});
+
+Route::prefix('logs')->group(function () {
+    Route::get("/", [LogController::class, 'index']);
     Route::get("/excel/bulk", [InventoryController::class, 'downloadExcelBulk']);
     Route::get("/pdf/{id}", [InventoryController::class, 'downloadPDFFiltered']);
     Route::get("/excel/{id}", [InventoryController::class, 'downloadExcelFiltered']);

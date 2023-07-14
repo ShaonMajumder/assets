@@ -61,7 +61,7 @@ const Cards = () => {
 
         
         <Typography variant="h5" component="h1" align="left" className={classes.pageTitle} gutterBottom>
-          History
+          Dashboard
         </Typography>
 
         <Grid container>

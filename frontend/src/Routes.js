@@ -2,6 +2,7 @@ import React from 'react';
 import Dashboard from './views/Admin/Dashboard';
 import InventoryDashboard from './views/Admin/InventoryDashboard';
 import InventoryHistory from './views/Admin/InventoryHistory';
+import LogHistory from './views/Admin/LogHistory';
 
 import Login from './views/Login';
 import { FaDashcube } from 'react-icons/fa';
@@ -64,6 +65,14 @@ const routes = [
     name: 'Add into Inventory',
     path: '/test',
     component: <Test />,
+    sideBar: false,
+    subNav: [],
+    permission: true,
+  },
+  {
+    name: 'Backend Logs',
+    path: '/logs',
+    component: <LogHistory />,
     sideBar: false,
     subNav: [],
     permission: true,

@@ -291,7 +291,7 @@ return (
     {
       ( is2D ) ? 
         (
-          (!isImageUploader && (imageArray2D[rowIndex2D] === undefined || imageArray2D[rowIndex2D].length == 0) ) ? '' :
+          (!isImageUploader && (imageArray2D[rowIndex2D] === undefined || imageArray2D[rowIndex2D].length === 0) ) ? '' :
             (
               <form onClick={(is2D) ? handleFormClick2D : handleFormClick}
                   id="form-file-upload" 
@@ -313,7 +313,7 @@ return (
                   ref={scrollContainerRef}
                   onClick={(e)=>{
                     e.stopPropagation();
-                    if(isImageUploader & ( imageArray2D[rowIndex2D] === undefined || imageArray2D[rowIndex2D].length == 0) ){
+                    if(isImageUploader & ( imageArray2D[rowIndex2D] === undefined || imageArray2D[rowIndex2D].length === 0) ){
                       inputRef.current.click();
                     }
                   }}
@@ -326,7 +326,7 @@ return (
                   style={{ userSelect: 'none', display: 'flex', justifyContent: 'center' }}
                 >
                   {
-                    (imageArray2D[rowIndex2D] === undefined || imageArray2D[rowIndex2D].length == 0) ? 
+                    (imageArray2D[rowIndex2D] === undefined || imageArray2D[rowIndex2D].length === 0) ? 
                         ( !isImageUploader ) ? '' : (
                           <div style={{
                             zIndex:'1', 
@@ -339,7 +339,7 @@ return (
                         )
                       :
                       (imageArray2D || []).map((imageRowArray,rowId) => {
-                        if(rowId == rowIndex2D){
+                        if(rowId === rowIndex2D){
                           return (imageRowArray || []).map((url,id) => (
                             <div key={id} className="d-flex" style={{
                                 marginLeft: '10px',
@@ -368,6 +368,8 @@ return (
                               }
                             </div>
                           ))
+                        }else{
+                          return '';
                         }
                       })
                                   
@@ -385,7 +387,7 @@ return (
         :
 
         (
-          (!isImageUploader && (imageArray === undefined || imageArray.length == 0) ) ? '' :
+          (!isImageUploader && (imageArray === undefined || imageArray.length === 0) ) ? '' :
             (
               <form onClick={handleFormClick}
                   id="form-file-upload" 
@@ -415,7 +417,7 @@ return (
                   style={{ userSelect: 'none', display: 'flex', justifyContent: 'center' }}
                 >
                   {
-                    (imageArray === undefined || imageArray.length == 0) ? 
+                    (imageArray === undefined || imageArray.length === 0) ? 
                         ( !isImageUploader ) ? '' : (
                           <div style={{
                             backgroundImage: `url(${AiOutlineCloudUpload})`,

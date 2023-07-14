@@ -1,3 +1,11 @@
+## BUG
+
+History Fields all Download Sections
+
+## Features need to implement
+
+Log
+
 User Authentication: Allow users to register, log in, and manage their accounts to access the inventory management features.
 
 Dashboard: Provide an overview of key inventory metrics such as total stock, low stock items, out-of-stock items, sales, and orders.
