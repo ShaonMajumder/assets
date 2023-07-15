@@ -150,14 +150,13 @@
             </thead>
             
             <tbody>
-                
                 @foreach($inventories as $data)
                     @php
                         $files = $data->files;
                     @endphp
                     <tr>
                         <td style="border: .1px solid black;">
-                            {{ $data->id }}
+                            {{ $data->inventory_id ?? $data->id }}
                         </td>
                         <td style="border: .1px solid black;">
                             {{ $data->name }}
@@ -166,10 +165,12 @@
                             {{ $data->quantity }}
                         </td>
                         <td style="border: .1px solid black;">
-                            @foreach($files as $file)    
-                                {{-- <img style="height:100px; margin:2px;" src="{{  storage_path('app/public/' . $file->file_path)  }}" alt="KX Logo"> --}}
-                                <img style="height:100px; margin:2px;" src="{{  storage_path('app/' . $file->file_path)  }}" alt="KX Logo">
-                            @endforeach                            
+                            @if($files)
+                                @foreach($files as $file)    
+                                    {{-- <img style="height:100px; margin:2px;" src="{{  storage_path('app/public/' . $file->file_path)  }}" alt="KX Logo"> --}}
+                                    <img style="height:100px; margin:2px;" src="{{  storage_path('app/' . $file->file_path)  }}" alt="KX Logo">
+                                @endforeach                            
+                            @endif
                         </td>
                     </tr>
                 @endforeach

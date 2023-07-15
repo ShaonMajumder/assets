@@ -32,16 +32,39 @@ class InventoryController extends Controller
         $this->inventoryAttachmentService = $inventoryAttachmentService;
     }
 
+    public function getInventory($id = null)
+    {
+        $inventory = Inventory::with('inventoryAttachment');
+        if($id){
+            $inventory = $inventory->where('inventory_id',$id)->get();
+        }else{
+            $inventory = $inventory->get();
+        }
+        return $inventory;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $inventories = Inventory::with('inventoryAttachment')->get();
-        
+        $inventories = $this->getInventory();
+        $totalWorth = $inventories->sum('value');
+        $inventoryCount = $inventories->count();
+
+        // Assets in Use
+        // Idle Assets
+        // Available Assets
+        // Maintenance Requests
+        // Buying Requests
 
         $inventoryItems = InventoryResource::collection($inventories);
-        $this->data = $inventoryItems;
+        $this->data = [
+            'total_assets' => $inventoryCount,
+            'total_worth' => $totalWorth,
+            'list' => $inventoryItems
+
+        ];
         $this->apiSuccess();
         return $this->apiOutput(Response::HTTP_OK, "List of 'inventories ...");  
     }
@@ -57,6 +80,7 @@ class InventoryController extends Controller
             $inventory = new Inventory();
             $inventory->name = $request->name;
             $inventory->quantity = $request->quantity;
+            $inventory->value = $request->value;
             $inventory->batch_id = 1;
             $inventory->save();
 
@@ -70,7 +94,7 @@ class InventoryController extends Controller
             $this->data = $request->all();
             $this->apiSuccess();
             return $this->apiOutput(Response::HTTP_CREATED, 'Inventory created successfully');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollback();
             return $this->apiOutput(Response::HTTP_INTERNAL_SERVER_ERROR, 'Error occurred during inventory creation '.$e->getMessage());
         }
@@ -82,7 +106,7 @@ class InventoryController extends Controller
     public function show(string $id)
     {
         try {
-            $inventory = Inventory::where('inventory_id',$id)->first();
+            $inventory = $this->getInventory($id)->first();
             $inventoryItem = new InventoryResource($inventory);
             $this->data = $inventoryItem;
             $this->apiSuccess();
@@ -99,6 +123,7 @@ class InventoryController extends Controller
     {
         try {
             $inventories = Inventory::withTrashed()
+                                    ->with('inventoryAttachment')
                                     ->where('inventory_id',$id)
                                     ->get();
             $inventoryItems = InventoryResource::collection($inventories);
@@ -118,7 +143,7 @@ class InventoryController extends Controller
         try {
             DB::beginTransaction();
 
-            $inventory = Inventory::find($id);
+            $inventory = Inventory::where('inventory_id',$id)->first();
             if (!$inventory) {
                 return $this->apiOutput(Response::HTTP_NOT_FOUND, 'Inventory not found');
             }
@@ -213,29 +238,87 @@ class InventoryController extends Controller
      */
     public function downloadPDFBulk() : JsonResponse
     {
-        $responseList = $this->index();
-        $listInventory = json_decode($responseList->getContent());
-        $inventories = $listInventory->data;;
-        $this->data = $listInventory->data;
+        try {
+            $responseList = $this->index();
+            $listInventory = json_decode($responseList->getContent());
+            $inventories = $listInventory->data->list;
+            $this->data = $listInventory->data->list;
+            
+            $now = Carbon::now()->format('Y-m-d-H:i:s');
+            $fileName = "Inventory-".$now. ".pdf";
+            $filePath = "inventory.pdf";
+    
+            $pdf = Pdf::loadView($filePath, compact("inventories"))->setPaper('a4', 'landscape');
+            $base64File = base64_encode($pdf->stream($fileName));
+            // for direct download - return $pdf->stream($fileName) or $pdf->download($fileName)
+    
+            return response()->json(
+                responseBuilder(
+                    Response::HTTP_OK,
+                    "Success",
+                    [
+                        "file_name" => $fileName,
+                        "file" => $base64File,
+                        "file_type" => StaticConstant::PDF_FILE_TYPE
+                    ]
+                ), Response::HTTP_OK);
+        } catch(Exception $e) {
+            return response()->json(
+                responseBuilder(
+                    Response::HTTP_INTERNAL_SERVER_ERROR,
+                    "Failed ".$e->getMessage(),
+                    [
+                        
+                    ]
+                ), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
         
-        $now = Carbon::now()->format('Y-m-d-H:i:s');
-        $fileName = "Inventory-".$now. ".pdf";
-        $filePath = "inventory.pdf";
-
-        $pdf = Pdf::loadView($filePath, compact("inventories"))->setPaper('a4', 'landscape');
-        $base64File = base64_encode($pdf->stream($fileName));
-        // for direct download - return $pdf->stream($fileName) or $pdf->download($fileName)
-
-        return response()->json(
-            responseBuilder(
-                Response::HTTP_OK,
-                "Success",
-                [
-                    "file_name" => $fileName,
-                    "file" => $base64File,
-                    "file_type" => StaticConstant::PDF_FILE_TYPE
-                ]
-            ), Response::HTTP_OK);
+    }
+    
+        /**
+     * Download PDF BULK
+     * @param string uuid
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function downloadHistoryPDFFiltered($id) : JsonResponse
+    {
+        try {
+            $inventories = Inventory::with('inventoryAttachment')
+                                    ->withTrashed()
+                                    ->where('inventory_id',$id)
+                                    ->get();
+                                    
+            $inventories = InventoryResource::collection($inventories);
+            
+            $now = Carbon::now()->format('Y-m-d-H:i:s');
+            $fileName = "Inventory-".$now. ".pdf";
+            $filePath = "inventory.pdf";
+    
+            $pdf = Pdf::loadView($filePath, compact("inventories"))->setPaper('a4', 'landscape');
+            $base64File = base64_encode($pdf->stream($fileName));
+            // for direct download - return $pdf->stream($fileName) or $pdf->download($fileName)
+    
+            return response()->json(
+                responseBuilder(
+                    Response::HTTP_OK,
+                    "Success",
+                    [
+                        "file_name" => $fileName,
+                        "file" => $base64File,
+                        "file_type" => StaticConstant::PDF_FILE_TYPE
+                    ]
+                ), Response::HTTP_OK);
+        } catch(Exception $e) {
+            return response()->json(
+                responseBuilder(
+                    Response::HTTP_INTERNAL_SERVER_ERROR,
+                    "Failed ".$e->getMessage(),
+                    [
+                        
+                    ]
+                ), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        
     }
 
     /**
@@ -245,28 +328,39 @@ class InventoryController extends Controller
      */
     public function downloadPDFFiltered($id) : JsonResponse
     {
-        $inventory = Inventory::findOrFail($id);
-        $inventoryItem = new InventoryResource($inventory);
-        $inventories[] = json_decode($inventoryItem->toJson());
-        
-        $now = Carbon::now()->format('Y-m-d-H:i:s');
-        $fileName = "Inventory-".$now. ".pdf";
-        $filePath = "inventory.pdf";
+        try{
+            $inventory = $this->getInventory($id)->first();
+            $inventoryItem = new InventoryResource($inventory);
+            $inventories[] = json_decode($inventoryItem->toJson());
+            
+            $now = Carbon::now()->format('Y-m-d-H:i:s');
+            $fileName = "Inventory-".$now. ".pdf";
+            $filePath = "inventory.pdf";
 
-        $pdf = Pdf::loadView($filePath, compact("inventories"))->setPaper('a4', 'landscape');
-        $base64File = base64_encode($pdf->stream($fileName));
-        // for direct download - return $pdf->stream($fileName) or $pdf->download($fileName)
+            $pdf = Pdf::loadView($filePath, compact("inventories"))->setPaper('a4', 'landscape');
+            $base64File = base64_encode($pdf->stream($fileName));
+            // for direct download - return $pdf->stream($fileName) or $pdf->download($fileName)
 
-        return response()->json(
-            responseBuilder(
-                Response::HTTP_OK,
-                "Success",
-                [
-                    "file_name" => $fileName,
-                    "file" => $base64File,
-                    "file_type" => StaticConstant::PDF_FILE_TYPE
-                ]
-            ), Response::HTTP_OK);
+            return response()->json(
+                responseBuilder(
+                    Response::HTTP_OK,
+                    "Success",
+                    [
+                        "file_name" => $fileName,
+                        "file" => $base64File,
+                        "file_type" => StaticConstant::PDF_FILE_TYPE
+                    ]
+                ), Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json(
+                responseBuilder(
+                    Response::HTTP_INTERNAL_SERVER_ERROR,
+                    "Failed ".$e->getMessage(),
+                    [
+                        
+                    ]
+                ), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -276,31 +370,42 @@ class InventoryController extends Controller
      */
     public function downloadExcelBulk() : JsonResponse
     {
-        $responseList = $this->index();
-        $listInventory = json_decode($responseList->getContent());
-        $inventories = $listInventory->data;
-        
-        $now = Carbon::now()->format('Y-m-d-H:i:s');
-        $fileName = "Inventory-".$now. ".xlsx";
-
-        $spreadsheet = new InventoryExport($inventories);
-        $writer = new Xlsx($spreadsheet->modifyExcel());
-
-        ob_start();
-        $writer->save('php://output');
-        $base64File = base64_encode(ob_get_contents());
-        ob_end_clean();
-        
-        return response()->json(
-            responseBuilder(
-                Response::HTTP_OK,
-                "Success downloaded Excel Bulk",
-                [
-                    "file_name" => $fileName,
-                    "file" => $base64File,
-                    "file_type" => StaticConstant::EXCEL_FILE_TYPE
-                ]
-            ), Response::HTTP_OK);
+        try {
+            $responseList = $this->index();
+            $listInventory = json_decode($responseList->getContent());
+            $inventories = $listInventory->data->list;
+            
+            $now = Carbon::now()->format('Y-m-d-H:i:s');
+            $fileName = "Inventory-".$now. ".xlsx";
+    
+            $spreadsheet = new InventoryExport($inventories);
+            $writer = new Xlsx($spreadsheet->modifyExcel());
+    
+            ob_start();
+            $writer->save('php://output');
+            $base64File = base64_encode(ob_get_contents());
+            ob_end_clean();
+            
+            return response()->json(
+                responseBuilder(
+                    Response::HTTP_OK,
+                    "Success downloaded Excel Bulk",
+                    [
+                        "file_name" => $fileName,
+                        "file" => $base64File,
+                        "file_type" => StaticConstant::EXCEL_FILE_TYPE
+                    ]
+                ), Response::HTTP_OK);
+        } catch(Exception $e) {
+            return response()->json(
+                responseBuilder(
+                    Response::HTTP_INTERNAL_SERVER_ERROR,
+                    "Failed ".$e->getMessage(),
+                    [
+                        
+                    ]
+                ), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -310,29 +415,87 @@ class InventoryController extends Controller
      */
     public function downloadExcelFiltered($id) : JsonResponse
     {
-        $inventory = Inventory::findOrFail($id);
-        $inventoryItem = new InventoryResource($inventory);
-        $inventories[] = json_decode($inventoryItem->toJson());
-        
-        $now = Carbon::now()->format('Y-m-d-H:i:s');
-        $fileName = "Inventory-".$now. ".xlsx";
-        $spreadsheet = new InventoryExport($inventories);
-        $writer = new Xlsx($spreadsheet->modifyExcel());
+        try {
+            $inventory = $this->getInventory($id)->first();
+            $inventoryItem = new InventoryResource($inventory);
+            $inventories[] = json_decode($inventoryItem->toJson());
+            
+            $now = Carbon::now()->format('Y-m-d-H:i:s');
+            $fileName = "Inventory-".$now. ".xlsx";
+            $spreadsheet = new InventoryExport($inventories);
+            $writer = new Xlsx($spreadsheet->modifyExcel());
+    
+            ob_start();
+            $writer->save('php://output');
+            $base64File = base64_encode(ob_get_contents());
+            ob_end_clean();
+            
+            return response()->json(
+                responseBuilder(
+                    Response::HTTP_OK,
+                    "Success downloaded Excel with id ".$id." ...",
+                    [
+                        "file_name" => $fileName,
+                        "file" => $base64File,
+                        "file_type" => StaticConstant::EXCEL_FILE_TYPE
+                    ]
+                ), Response::HTTP_OK);
+        } catch(Exception $e) {
+            return response()->json(
+                responseBuilder(
+                    Response::HTTP_INTERNAL_SERVER_ERROR,
+                    "Failed ".$e->getMessage(),
+                    [
+                        
+                    ]
+                ), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
-        ob_start();
-        $writer->save('php://output');
-        $base64File = base64_encode(ob_get_contents());
-        ob_end_clean();
-        
-        return response()->json(
-            responseBuilder(
-                Response::HTTP_OK,
-                "Success downloaded Excel with id ".$id." ...",
-                [
-                    "file_name" => $fileName,
-                    "file" => $base64File,
-                    "file_type" => StaticConstant::EXCEL_FILE_TYPE
-                ]
-            ), Response::HTTP_OK);
+    /**
+     * Download EXCEL with specific id
+     * @param string uuid
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function downloadHistoryExcelFiltered($id) : JsonResponse
+    {
+        try {
+            $inventories = Inventory::with('inventoryAttachment')
+                                    ->withTrashed()
+                                    ->where('inventory_id',$id)
+                                    ->get();
+                                    
+            $inventories = InventoryResource::collection($inventories);
+            
+            $now = Carbon::now()->format('Y-m-d-H:i:s');
+            $fileName = "Inventory-".$now. ".xlsx";
+            $spreadsheet = new InventoryExport($inventories);
+            $writer = new Xlsx($spreadsheet->modifyExcel());
+    
+            ob_start();
+            $writer->save('php://output');
+            $base64File = base64_encode(ob_get_contents());
+            ob_end_clean();
+            
+            return response()->json(
+                responseBuilder(
+                    Response::HTTP_OK,
+                    "Success downloaded Excel with id ".$id." ...",
+                    [
+                        "file_name" => $fileName,
+                        "file" => $base64File,
+                        "file_type" => StaticConstant::EXCEL_FILE_TYPE
+                    ]
+                ), Response::HTTP_OK);
+        } catch(Exception $e) {
+            return response()->json(
+                responseBuilder(
+                    Response::HTTP_INTERNAL_SERVER_ERROR,
+                    "Failed ".$e->getMessage(),
+                    [
+                        
+                    ]
+                ), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

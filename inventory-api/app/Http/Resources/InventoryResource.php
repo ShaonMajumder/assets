@@ -67,6 +67,7 @@ class InventoryResource extends JsonResource
         $this->field_items = parent::toArray(request());
         $this->field_items["files"] = $this->inventoryAttachment;
         $this->field_items["id"] = $this->inventory_id;
+        $this->field_items["revision"] = $this->batch_id > 1 ? $this->batch_id - 1 : '';
         $this->hide(["batch_id", "created_at", "updated_at", "deleted_at","inventory_id"]);
 
         if($this->rename_fields != [] ){

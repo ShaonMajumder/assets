@@ -65,7 +65,7 @@ class InventoryExport
         $sl++;
 
         foreach($this->inventories as $data){
-            $sheet->setCellValue("A".$sl, $data->id);
+            $sheet->setCellValue("A".$sl, $data->inventory_id ?? $data->id);
             $sheet->setCellValue("B".$sl, $data->name);
             $sheet->setCellValue("C".$sl, $data->quantity);
             // $sheet->setCellValue("D".$sl, $data->files);

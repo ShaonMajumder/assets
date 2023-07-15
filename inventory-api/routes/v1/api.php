@@ -33,10 +33,21 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
  * Download Routes
  */
 Route::prefix('inventory/download')->group(function () {
-    Route::get("/pdf/bulk", [InventoryController::class, 'downloadPDFBulk']);
-    Route::get("/excel/bulk", [InventoryController::class, 'downloadExcelBulk']);
-    Route::get("/pdf/{id}", [InventoryController::class, 'downloadPDFFiltered']);
-    Route::get("/excel/{id}", [InventoryController::class, 'downloadExcelFiltered']);
+
+    Route::prefix('pdf')->group(function () {
+        Route::get("/bulk", [InventoryController::class, 'downloadPDFBulk']);
+        Route::get("/{id}", [InventoryController::class, 'downloadPDFFiltered']);
+    });
+
+    Route::prefix('excel')->group(function () {
+        Route::get("/bulk", [InventoryController::class, 'downloadExcelBulk']);
+        Route::get("/{id}", [InventoryController::class, 'downloadExcelFiltered']);
+    });
+
+    Route::prefix('history')->group(function () {
+        Route::get("/pdf/{id}", [InventoryController::class, 'downloadHistoryPDFFiltered']);
+        Route::get("/excel/{id}", [InventoryController::class, 'downloadHistoryExcelFiltered']);
+    });
 });
 
 Route::prefix('logs')->group(function () {
