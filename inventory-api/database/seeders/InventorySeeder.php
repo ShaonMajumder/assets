@@ -19,12 +19,14 @@ class InventorySeeder extends Seeder
         // Seed your inventory data
         Inventory::create([
             'uuid' => Str::uuid(),
+            'inventory_id' => 1,
             'name' => 'Item 1',
             'quantity' => 10,
         ]);
 
         Inventory::create([
             'uuid' => Str::uuid(),
+            'inventory_id' => 2,
             'name' => 'Item 2',
             'quantity' => 5,
         ]);

@@ -9,6 +9,7 @@ import { FaDashcube } from 'react-icons/fa';
 import CreateInventory from './views/Admin/CreateInventory';
 import UpdateInventory from './views/Admin/UpdateInventory';
 import Test from './views/Admin/Inventory/Test';
+import Product from './views/Product';
 
 const routes = [
   {
@@ -65,6 +66,14 @@ const routes = [
     name: 'Add into Inventory',
     path: '/test',
     component: <Test />,
+    sideBar: false,
+    subNav: [],
+    permission: true,
+  },
+  {
+    name: 'Products Ecommer-ce',
+    path: '/products',
+    component: <Product />,
     sideBar: false,
     subNav: [],
     permission: true,

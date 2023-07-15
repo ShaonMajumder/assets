@@ -24,7 +24,7 @@ yarn add axios
 yarn add react-router
 yarn add file-saver
 yarn add @mui/icons-material @mui/material @emotion/styled @emotion/react
-
+yarn add js-cookie
 
 # Backend
 composer create-project --prefer-dist laravel/laravel inventory-api
@@ -41,14 +41,18 @@ composer require phpoffice/phpspreadsheet
 composer require barryvdh/laravel-dompdf
 
 #after editing composer.json files for helpers class
-php artisan clear-compiled 
+php artisan clear-compiled
 composer dump-autoload
 php artisan optimize
+#end
 
 php artisan make:migration add_softdelete_into_inventory_attachments_table --table=inventory_attachments
 php artisan make:migration add_batch_id_into_inventories_table --table=inventories
 php artisan make:migration add_timestamp_update_into_inventory_attachments_table --table=inventory_attachments
 composer require awobaz/compoships
+composer require laravel/sanctum
+php artisan make:controller LoginController
+php artisan make:resource UserResource
 ```
 
 ## Run

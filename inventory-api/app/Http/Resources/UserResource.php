@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class InventoryResource extends JsonResource
+class UserResource extends JsonResource
 {
     protected $without_fields = [];
     protected $accept_fields = [];
@@ -65,9 +65,6 @@ class InventoryResource extends JsonResource
 
     public function fieldItems(){
         $this->field_items = parent::toArray(request());
-        $this->field_items["files"] = $this->inventoryAttachment;
-        $this->field_items["id"] = $this->inventory_id;
-        $this->hide(["batch_id", "created_at", "updated_at", "deleted_at","inventory_id"]);
 
         if($this->rename_fields != [] ){
             foreach($this->rename_fields as $key => $value){
