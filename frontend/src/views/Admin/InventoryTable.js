@@ -16,6 +16,7 @@ import {
 } from '../../utils/Files';
 import { HTTP_OK } from '../../utils/HttpStatusCode';
 import { notify } from '../../utils/Toast';
+import HttpService from '../../services/HttpService';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -52,7 +53,6 @@ const InventoryTable = ({inventoryData,setInventoryData}) => {
   },[inventoryData]);
 
   const setImagesOnLoading = async (inventoryDataList) => {
-    console.log("setImagesOnLoading",inventoryDataList)
     let images2D = [];
     for(let i in inventoryDataList){
       images2D[i] = inventoryDataList[i]?.files;
@@ -62,7 +62,8 @@ const InventoryTable = ({inventoryData,setInventoryData}) => {
       images2D: images2D,
       images_url: images_url,
       imageViewerArray2D: imageViewerArray2D,
-      setImageViewerArray2D: setImageViewerArray2D
+      setImageViewerArray2D: setImageViewerArray2D,
+      headers : HttpService.getAuthTokenHeader()
     });
   }
 
@@ -70,7 +71,7 @@ const InventoryTable = ({inventoryData,setInventoryData}) => {
     const {data,status} = await deleteInventory(id);
     let inventoryData = data.data;
     if (status === HTTP_OK) {
-      console.log(inventoryData);
+      // console.log(inventoryData);
       notify("Inventory Deleted", status);
       setInventoryData(([...inventoryData]) => inventoryData.filter((idx)=> idx !== id) );
     } else {

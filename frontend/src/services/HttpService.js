@@ -26,12 +26,11 @@ const HttpMethods = {
 const _axios = axios.create();
 
 const configure = () => {
-    let token_type = sessionStorage.getItem('token_type');
-    let access_token = sessionStorage.getItem('access_token');
-    // Cookies.get('access_token')
-    console.log(sessionStorage.getItem('loggedIn'));
+    let token_type = Cookies.get('token_type');
+    let access_token = Cookies.get('access_token');
+    
     _axios.interceptors.request.use((config) => {
-        const isLoggedIn = sessionStorage.getItem('loggedIn') === 'true' || false;
+        const isLoggedIn = checkLoggedInStatus();
         if (isLoggedIn) {
             config.headers.Authorization = `${token_type} ${access_token}`;
             return config;
@@ -39,12 +38,47 @@ const configure = () => {
     });
 }; 
 
+const getAxiosClientAuth = () => {
+    let token_type = Cookies.get('token_type');
+    let access_token = Cookies.get('access_token');
+    
+    const _axios = axios.create();
+    _axios.interceptors.request.use((config) => {
+        const isLoggedIn = checkLoggedInStatus();
+        if (isLoggedIn) {
+            config.headers.Authorization = `${token_type} ${access_token}`;
+            return config;
+        }
+    });
+    return _axios;
+}; 
+
+const getAuthTokenHeader = () => {
+    let token = Cookies.get('access_token');
+    let token_type = Cookies.get('token_type');
+    let customHeaders = {
+      headers: {
+        "Authorization" : `${token_type} ${token}`
+      }
+    }
+    return customHeaders;
+}
+
+export const checkLoggedInStatus = () => {
+    const isLoggedIn = Cookies.get('loggedIn') === 'true';
+    const accessToken = Cookies.get('access_token');
+    return isLoggedIn && accessToken;
+}
+
 const getAxiosClient = () => _axios;
 
 const HttpService = {
     HttpMethods,
     configure,
     getAxiosClient,
+    getAxiosClientAuth,
+    getAuthTokenHeader,
+    checkLoggedInStatus
 };
 
 export default HttpService;

@@ -19,6 +19,7 @@ const routes = [
     sideBar: false,
     subNav: [],
     permission: true,
+    private: false, // Not a private route
   },
   {
     name: 'Dashboard',
@@ -28,6 +29,7 @@ const routes = [
     sideBar: false,
     subNav: [],
     permission: true,
+    private: true, // Private route
   },
   {
     name: 'Inventory',
@@ -36,6 +38,7 @@ const routes = [
     sideBar: false,
     subNav: [],
     permission: true,
+    private: true, // Private route
   },
   {
     name: 'Add into Inventory',
@@ -44,6 +47,7 @@ const routes = [
     sideBar: false,
     subNav: [],
     permission: true,
+    private: true, // Private route
   },
   {
     name: 'Edit Inventory',
@@ -52,6 +56,7 @@ const routes = [
     sideBar: false,
     subNav: [],
     permission: true,
+    private: true, // Private route
   },
   {
     name: 'Inventory History',
@@ -61,6 +66,7 @@ const routes = [
     sideBar: false,
     subNav: [],
     permission: true,
+    private: true, // Private route
   },
   {
     name: 'Add into Inventory',
@@ -69,14 +75,16 @@ const routes = [
     sideBar: false,
     subNav: [],
     permission: true,
+    private: true, // Private route
   },
   {
-    name: 'Products Ecommer-ce',
+    name: 'Products Ecommerce',
     path: '/products',
     component: <Product />,
     sideBar: false,
     subNav: [],
     permission: true,
+    private: true, // Private route
   },
   {
     name: 'Backend Logs',
@@ -85,6 +93,7 @@ const routes = [
     sideBar: false,
     subNav: [],
     permission: true,
+    private: true, // Private route
   },
   // Add more routes for other pages
 ];

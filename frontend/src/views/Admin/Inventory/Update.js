@@ -19,6 +19,7 @@ import { SUCCESS } from '../../../components/ImageGalleryUploader/MessageConst';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import { getInventory, updateInventory } from '../../../services/InventoryServices';
+import HttpService from '../../../services/HttpService';
 
 const myTheme = createTheme({
   palette: {
@@ -99,7 +100,8 @@ const Update = () => {
         imageViewerArray: imageViewerArray,
         setImageViewerArray: setImageViewerArray,
         imageFormdataArray: imageFormdataArray,
-        setImageFormdataArray: setImageFormdataArray
+        setImageFormdataArray: setImageFormdataArray,
+        headers : HttpService.getAuthTokenHeader()
       });
 
       console.log("imageFormdataArray on loading...",im)

@@ -14,15 +14,12 @@ export const convertImageUrl = async (imageUrl,headers=null) => {
   if (headers == null){
     response = await fetch(imageUrl);
   } else{
-    response = await fetch(imageUrl, headers);
+    response = await fetch(imageUrl,  headers);
   }
-  
   const blob = await response.blob();
   const objectUrl = URL.createObjectURL(blob);
   return objectUrl;
 }
-
-
 
 export const convertImageUrlToFile = async (imageUrl,headers=null) => {
   try {
@@ -104,7 +101,7 @@ export const fetchEditDBImages2D = async ({
   setImageFormdataArray2D,
   headers = null
 }) => {  
-  console.log(images2D)
+  // console.log(images2D)
   let  fileObjView = [];
   let  fileObjFD = [];
 

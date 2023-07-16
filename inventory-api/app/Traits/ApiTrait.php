@@ -36,14 +36,16 @@ trait ApiTrait{
                 $this->data = array_merge(
                     [
                         "access_token" => $this->access_token,
-                        "token_type"  => "Bearer"
+                        "token_type"  => "Bearer",
+                        "expires_in"  => 7
                     ],
                     $this->data
                 );
             }else{
                 $this->data = [
                         "access_token" => $this->access_token,
-                        "token_type"  => "Bearer"
+                        "token_type"  => "Bearer",
+                        "expires_in"  => 7
                     ];
             }
             
