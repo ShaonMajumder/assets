@@ -61,8 +61,6 @@ const InventoryTableHistory = () => {
   const setImagesOnLoading = async (inventoryData) => {
     let images2D = [];
     for(let i in inventoryData){
-      console.log(inventoryData[i])
-      console.log(inventoryData[i]?.files)
       images2D[i] = inventoryData[i]?.files;
     }
     let images_url = `${process.env.REACT_APP_API_URL}/inventory/get-image/?fileName=`;
@@ -76,8 +74,8 @@ const InventoryTableHistory = () => {
 
   const fetchInventoriesHistory = async () => {
     const {data,status} = await listInventoryHistory(id);
-    let inventoryData = data.data;
     if (status === HTTP_OK) {
+      let inventoryData = data?.data;
       setInventoryData(inventoryData)
       setImagesOnLoading(inventoryData);
     } else {
@@ -86,11 +84,9 @@ const InventoryTableHistory = () => {
   }
 
   const handleDelete = async (id) => {
-    console.log("handleDelete")
     const {data,status} = await deleteInventory(id);
     let inventoryData = data.data;
     if (status === HTTP_OK) {
-      console.log(inventoryData);
       notify("Inventory Deleted", status);
       setInventoryData(inventoryData)
     } else {
@@ -99,7 +95,7 @@ const InventoryTableHistory = () => {
   }
 
   const handleDownloadPDF = async ( id) => {
-    const {data,status} = await fileDownloader( id, "pdf");
+    const {data,status} = await fileDownloader( id, "pdf", "history");
     if (status === HTTP_OK) {
       const fileContent = data?.data?.file;
       const file_name = data?.data?.file_name;
@@ -112,33 +108,7 @@ const InventoryTableHistory = () => {
   };
 
   const handleDownloadExcel = async (id) => {
-    const {data,status} = await fileDownloader(id, "excel");
-    if (status === HTTP_OK) {
-      const fileContent = data?.data?.file;
-      const file_name = data?.data?.file_name;
-      const file_type = data?.data?.file_type;
-
-      downloadExcelFrontendAuth(fileContent,file_name,file_type)
-    } else {
-      notify(data?.data?.message, data?.data?.status_code);
-    }
-  };
-
-  const handleBulkPDFDownload = async () => {
-    const {data,status} = await bulkFileDownloader( "pdf");
-    if (status === HTTP_OK) {
-      const fileContent = data?.data?.file;
-      const file_name = data?.data?.file_name;
-      const file_type = data?.data?.file_type;
-
-      downloadPDFFrontendAuth(fileContent,file_name,file_type)
-    } else {
-      notify(data?.data?.message, data?.data?.status_code);
-    }
-  };
-
-  const handleBulkExcelDownload = async () => {
-    const {data,status} = await bulkFileDownloader( "excel");
+    const {data,status} = await fileDownloader(id, "excel", "history");
     if (status === HTTP_OK) {
       const fileContent = data?.data?.file;
       const file_name = data?.data?.file_name;
@@ -155,26 +125,20 @@ const InventoryTableHistory = () => {
       <Paper className={classes.paper}>
         <div className={classes.bulkButtonsContainer}>
           <Typography variant="body1" component="div" className={classes.bulkActionsText}>
-            Bulk actions:
+            Actions:
           </Typography>
-          <IconButton 
-            aria-label="Add Inventory" 
-            className={classes.bulkButton}
-            onClick={()=> {
-              navigate("/inventory/create");
-            }} >
-            <GrAdd size={34} />
-          </IconButton>
           <IconButton 
             aria-label="Bulk Download PDF" 
             className={classes.bulkButton}
-            onClick={handleBulkPDFDownload}>
+            onClick={() => handleDownloadPDF(id) }
+          >
             <GrDocumentPdf color='red !important' size={30} />
           </IconButton>
           <IconButton 
             aria-label="Bulk Download Excel" 
             className={classes.bulkButton}
-            onClick={handleBulkExcelDownload}>
+            onClick={() => handleDownloadExcel(id) }
+          >
             <RiFileExcel2Line size={33} style={{ color: "#0bac81" }}/>
           </IconButton>
         </div>
@@ -185,8 +149,8 @@ const InventoryTableHistory = () => {
                 <TableCell>ID</TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Quantity</TableCell>
+                <TableCell>Value</TableCell>
                 <TableCell>Images</TableCell>
-                <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -195,6 +159,7 @@ const InventoryTableHistory = () => {
                   <TableCell>{item.id}</TableCell>
                   <TableCell>{item.name}</TableCell>
                   <TableCell>{item.quantity}</TableCell>
+                  <TableCell>{item.value}</TableCell>
                   <TableCell>
                     <ImageGalleryUploader
                       imageUploader={false}
@@ -202,20 +167,6 @@ const InventoryTableHistory = () => {
                       imageArray2D={imageViewerArray2D} 
                       rowIndex2D={index}
                     />
-                  </TableCell>
-                  <TableCell>
-                    <IconButton 
-                      aria-label="Download PDF" 
-                      onClick={() => handleDownloadPDF(item.id) }
-                    >
-                      <GrDocumentPdf color='red !important' size={23} />
-                    </IconButton>
-                    <IconButton
-                      aria-label="Download Excel"
-                      onClick={() => handleDownloadExcel(item.id) }
-                    >
-                      <RiFileExcel2Line size={24} style={{ color: "#0bac81" }}/>
-                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}

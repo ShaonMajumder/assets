@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Paper, TextField, Button, Typography, Grid } from '@material-ui/core';
+import { jsonToFormdata } from 'convert-form-data';
+import { postLogin } from '../services/InventoryServices';
+import { HTTP_OK } from '../utils/HttpStatusCode';
+import { notify } from '../utils/Toast';
+import { useNavigate } from 'react-router-dom';
+import { SUCCESS } from '../services/MessageConst';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -23,22 +29,40 @@ const useStyles = makeStyles((theme) => ({
 
 const Login = () => {
   const classes = useStyles();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const [formFields, setFormFields] = useState({
+    email: '',
+    password: ''
+  });
 
-  const handleUsernameChange = (e) => {
-    setUsername(e.target.value);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormFields((prevState) => ({
+      ...prevState,
+      [name]: value
+    }));
   };
 
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Perform login logic here
-    console.log('Username:', username);
-    console.log('Password:', password);
+
+    let formDataObject = new FormData();
+    formDataObject = jsonToFormdata("", formFields, formDataObject);
+    const {data,status} = await postLogin(formDataObject);
+    console.log("data",data)    
+    if (status === HTTP_OK) {
+      let access_token = data?.data?.access_token;
+      let token_type = data?.data?.token_type;
+
+      sessionStorage.setItem('loggedIn', true);
+      sessionStorage.setItem('token_type', token_type);
+      sessionStorage.setItem('access_token', access_token);
+
+      notify(formFields.name+" Inventory Created!", SUCCESS);
+      navigate('/');
+    } else {
+      notify(data.message, data.status_code);
+    }
   };
 
   return (
@@ -49,23 +73,28 @@ const Login = () => {
             Login
           </Typography>
           <form onSubmit={handleSubmit}>
+            
             <TextField
+              name="email"
               type="text"
               label="Username"
               variant="outlined"
               fullWidth
               className={classes.textField}
-              value={username}
-              onChange={handleUsernameChange}
+              value={formFields.email}
+              onChange={handleInputChange}
+              required
             />
             <TextField
-              type="password"
+              name="password"
+              type="text"
               label="Password"
               variant="outlined"
               fullWidth
               className={classes.textField}
-              value={password}
-              onChange={handlePasswordChange}
+              value={formFields.password}
+              onChange={handleInputChange}
+              required
             />
             <Button
               type="submit"

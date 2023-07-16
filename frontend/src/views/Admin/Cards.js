@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { AppBar, Avatar, Card, CardContent, CardHeader, createTheme, Grid, Paper, ThemeProvider, Toolbar, Typography } from '@material-ui/core';
 import Header from './Header';
@@ -52,8 +52,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Cards = () => {
+const Cards = ({inventoryData,setInventoryData}) => {
   const classes = useStyles();
+
+  useEffect(() => {
+    
+  },[inventoryData]);
 
   return (
     <ThemeProvider theme={myTheme}>
@@ -68,7 +72,7 @@ const Cards = () => {
           <Grid item xs={12} sm={6} md={3}>
             <Paper className={classes.paper}>
               <Typography variant="h6">Total Assets</Typography>
-              <Typography variant="h4">1,234</Typography>
+              <Typography variant="h4">{inventoryData.total_assets || 0}</Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -90,7 +94,7 @@ const Cards = () => {
           <Grid item xs={12} sm={6} md={3}>
             <Paper className={classes.paper}>
               <Typography variant="h6">Available Assets</Typography>
-              <Typography variant="h4">$123,456</Typography>
+              <Typography variant="h4">123,456</Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -108,7 +112,7 @@ const Cards = () => {
           <Grid item xs={12} sm={6} md={3}>
             <Paper className={classes.paper}>
               <Typography variant="h6">Total Worth</Typography>
-              <Typography variant="h4">$750,00,00</Typography>
+              <Typography variant="h4">${inventoryData.total_worth || 0}</Typography>
             </Paper>
           </Grid>
 

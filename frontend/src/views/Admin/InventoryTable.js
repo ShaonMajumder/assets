@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Paper, Typography, Table, TableContainer, TableHead, TableBody, TableRow, TableCell } from '@material-ui/core';
-import { listInventory, deleteInventory, fileDownloader, bulkFileDownloader } from '../../services/InventoryServices';
+import { deleteInventory, fileDownloader, bulkFileDownloader } from '../../services/InventoryServices';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
@@ -42,22 +42,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const InventoryTable = () => {
+const InventoryTable = ({inventoryData,setInventoryData}) => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const [inventoryData, setInventoryData] = useState([]);
   const [imageViewerArray2D, setImageViewerArray2D] = useState([]);
 
   useEffect(() => {
-    fetchInventories();
-  },[]);
+    setImagesOnLoading(inventoryData?.list || []);
+  },[inventoryData]);
 
-  const setImagesOnLoading = async (inventoryData) => {
+  const setImagesOnLoading = async (inventoryDataList) => {
+    console.log("setImagesOnLoading",inventoryDataList)
     let images2D = [];
-    for(let i in inventoryData){
-      console.log(inventoryData[i])
-      console.log(inventoryData[i]?.files)
-      images2D[i] = inventoryData[i]?.files;
+    for(let i in inventoryDataList){
+      images2D[i] = inventoryDataList[i]?.files;
     }
     let images_url = `${process.env.REACT_APP_API_URL}/inventory/get-image/?fileName=`;
     await fetchDBImages2D({
@@ -68,25 +66,13 @@ const InventoryTable = () => {
     });
   }
 
-  const fetchInventories = async () => {
-    const {data,status} = await listInventory();
-    let inventoryData = data.data;
-    if (status === HTTP_OK) {
-      setInventoryData(inventoryData)
-      setImagesOnLoading(inventoryData);
-    } else {
-      notify(data.message, data.status_code);
-    }
-  }
-
   const handleDelete = async (id) => {
-    console.log("handleDelete")
     const {data,status} = await deleteInventory(id);
     let inventoryData = data.data;
     if (status === HTTP_OK) {
       console.log(inventoryData);
       notify("Inventory Deleted", status);
-      setInventoryData(inventoryData)
+      setInventoryData(([...inventoryData]) => inventoryData.filter((idx)=> idx !== id) );
     } else {
       notify(data.message, data.status_code);
     }
@@ -108,7 +94,6 @@ const InventoryTable = () => {
   const handleDownloadExcel = async (id) => {
     const {data,status} = await fileDownloader(id, "excel");
     if (status === HTTP_OK) {
-      console.log(data)
       const fileContent = data?.data?.file;
       const file_name = data?.data?.file_name;
       const file_type = data?.data?.file_type;
@@ -180,55 +165,66 @@ const InventoryTable = () => {
                 <TableCell>ID</TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Quantity</TableCell>
+                <TableCell>Value</TableCell>
+                <TableCell>Revision</TableCell>
                 <TableCell>Images</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {inventoryData.map((item,index) => (
-                <TableRow key={item.id}>
-                  <TableCell>{item.id}</TableCell>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.quantity}</TableCell>
-                  <TableCell>
-                    <ImageGalleryUploader
-                      imageUploader={false}
-                      is2D={true}
-                      imageArray2D={imageViewerArray2D} 
-                      rowIndex2D={index}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <IconButton aria-label="delete" onClick={()=> {
-                      handleDelete(item.id);
-                    }}>
-                      <DeleteIcon />
-                    </IconButton>
-                    <IconButton aria-label="edit" onClick={()=> {
-                      navigate(`/inventory/update/${item.id}`);
-                    }}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton aria-label="history" onClick={()=> {
-                      navigate(`/inventory/history/${item.id}`);
-                    }}>
-                      <GrHistory />
-                    </IconButton>
-                    <IconButton 
-                      aria-label="Download PDF" 
-                      onClick={() => handleDownloadPDF(item.id) }
-                    >
-                      <GrDocumentPdf color='red !important' size={23} />
-                    </IconButton>
-                    <IconButton
-                      aria-label="Download Excel"
-                      onClick={() => handleDownloadExcel(item.id) }
-                    >
-                      <RiFileExcel2Line size={24} style={{ color: "#0bac81" }}/>
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {
+                Object.keys(inventoryData).map((key, index) => {
+                  const item = key === 'list' ? inventoryData[key] : [];
+                  return item.map(
+                    (item,index) => (
+                      <TableRow key={item.id}>
+                        <TableCell>{item.id}</TableCell>
+                        <TableCell>{item.name}</TableCell>
+                        <TableCell>{item.quantity}</TableCell>
+                        <TableCell>{item.value}</TableCell>
+                        <TableCell>{item.revision}</TableCell>
+                        <TableCell>
+                          <ImageGalleryUploader
+                            imageUploader={false}
+                            is2D={true}
+                            imageArray2D={imageViewerArray2D} 
+                            rowIndex2D={index}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <IconButton aria-label="delete" onClick={()=> {
+                            handleDelete(item.id);
+                          }}>
+                            <DeleteIcon />
+                          </IconButton>
+                          <IconButton aria-label="edit" onClick={()=> {
+                            navigate(`/inventory/update/${item.id}`);
+                          }}>
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton aria-label="history" onClick={()=> {
+                            navigate(`/inventory/history/${item.id}`);
+                          }}>
+                            <GrHistory />
+                          </IconButton>
+                          <IconButton 
+                            aria-label="Download PDF" 
+                            onClick={() => handleDownloadPDF(item.id) }
+                          >
+                            <GrDocumentPdf color='red !important' size={23} />
+                          </IconButton>
+                          <IconButton
+                            aria-label="Download Excel"
+                            onClick={() => handleDownloadExcel(item.id) }
+                          >
+                            <RiFileExcel2Line size={24} style={{ color: "#0bac81" }}/>
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  )
+                })
+              }
             </TableBody>
           </Table>
         </TableContainer>

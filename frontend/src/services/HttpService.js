@@ -26,10 +26,14 @@ const HttpMethods = {
 const _axios = axios.create();
 
 const configure = () => {
+    let token_type = sessionStorage.getItem('token_type');
+    let access_token = sessionStorage.getItem('access_token');
+    // Cookies.get('access_token')
+    console.log(sessionStorage.getItem('loggedIn'));
     _axios.interceptors.request.use((config) => {
-        const isLoggedIn = sessionStorage.getItem('loggedIn') == 'true' || false;
+        const isLoggedIn = sessionStorage.getItem('loggedIn') === 'true' || false;
         if (isLoggedIn) {
-            config.headers.Authorization = `Bearer ${Cookies.get('access_token')}`;
+            config.headers.Authorization = `${token_type} ${access_token}`;
             return config;
         }
     });

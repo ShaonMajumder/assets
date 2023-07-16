@@ -91,7 +91,6 @@ const Update = () => {
     let inventoryData = data.data;
     if (status === HTTP_OK) {
       
-      console.log("inventoryData.files",inventoryData.files)
       let images = inventoryData.files ?? null;
       let images_url = `${process.env.REACT_APP_API_URL}/inventory/get-image/?fileName=/`;
       let im = await fetchEditDBImages({

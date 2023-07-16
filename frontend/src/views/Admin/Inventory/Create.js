@@ -78,6 +78,7 @@ const Create = () => {
   const [formFields, setFormFields] = useState({
     name: '',
     quantity: '',
+    value: '',
     files: null
   });
   const [imageViewerArray, setImageViewerArray] = useState([]);
@@ -172,6 +173,19 @@ const Create = () => {
                       fullWidth
                       className={classes.textField}
                       value={formFields.quantity}
+                      style={{ marginBottom: '1rem' }}
+                      onChange={handleInputChange}
+                      required
+                    />
+
+                    <TextField
+                      name="value"
+                      type="number"
+                      label="Value"
+                      variant="outlined"
+                      fullWidth
+                      className={classes.textField}
+                      value={formFields.value}
                       style={{ marginBottom: '1rem' }}
                       onChange={handleInputChange}
                       required

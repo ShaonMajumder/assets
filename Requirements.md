@@ -1,6 +1,6 @@
 ## BUG
 
-History Fields all Download Sections
+History Download PDF with No Images
 
 ## Features need to implement
 

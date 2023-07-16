@@ -57,8 +57,6 @@ const LogsTable = () => {
   const setImagesOnLoading = async (inventoryData) => {
     let images2D = [];
     for(let i in inventoryData){
-      console.log(inventoryData[i])
-      console.log(inventoryData[i]?.files)
       images2D[i] = inventoryData[i]?.files;
     }
     let images_url = `${process.env.REACT_APP_API_URL}/inventory/get-image/?fileName=`;
@@ -73,9 +71,8 @@ const LogsTable = () => {
   const fetchLogsHistory = async () => {
     const {data,status} = await listLogsFilesAndDir();
     let inventoryData = data.data;
-    console.log("logs data",inventoryData)
     if (status === HTTP_OK) {
-      setInventoryData(data.data)
+      setInventoryData(inventoryData)
     } else {
       notify(data.message, data.status_code);
     }
@@ -84,11 +81,9 @@ const LogsTable = () => {
   
 
   const handleDelete = async (id) => {
-    console.log("handleDelete")
     const {data,status} = await deleteInventory(id);
     let inventoryData = data.data;
     if (status === HTTP_OK) {
-      console.log(inventoryData);
       notify("Inventory Deleted", status);
       setInventoryData(inventoryData)
     } else {

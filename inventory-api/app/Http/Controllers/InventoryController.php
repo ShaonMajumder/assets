@@ -6,6 +6,7 @@ use App\Exports\InventoryExport;
 use App\Helpers\StaticConstant;
 use App\Http\Requests\InventoryValidation;
 use App\Http\Resources\InventoryResource;
+use App\Http\Resources\InventoryResourceCollection;
 use App\Traits\ApiTrait;
 use App\Models\Inventory;
 use App\Services\V1\InventoryAttachmentService;
@@ -59,6 +60,8 @@ class InventoryController extends Controller
         // Buying Requests
 
         $inventoryItems = InventoryResource::collection($inventories);
+        
+        // dd($inventoryItems);
         $this->data = [
             'total_assets' => $inventoryCount,
             'total_worth' => $totalWorth,

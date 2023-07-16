@@ -21,7 +21,9 @@ class InventoryResource extends JsonResource
 
     public static function collection($resource)
     {
+        // dd($resource); // collection
         return tap(new InventoryResourceCollection($resource), function ($collection) {
+            // dd($collection);  // collection
             $collection->collects = __CLASS__;
         });
     }
@@ -65,10 +67,11 @@ class InventoryResource extends JsonResource
 
     public function fieldItems(){
         $this->field_items = parent::toArray(request());
+        // dd($this->inventoryAttachment);
         $this->field_items["files"] = $this->inventoryAttachment;
         $this->field_items["id"] = $this->inventory_id;
         $this->field_items["revision"] = $this->batch_id > 1 ? $this->batch_id - 1 : '';
-        $this->hide(["batch_id", "created_at", "updated_at", "deleted_at","inventory_id"]);
+        // $this->hide(["batch_id", "created_at", "updated_at", "deleted_at","inventory_id"]);
 
         if($this->rename_fields != [] ){
             foreach($this->rename_fields as $key => $value){
