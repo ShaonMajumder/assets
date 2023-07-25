@@ -17,6 +17,7 @@ import {
 import { HTTP_OK } from '../../utils/HttpStatusCode';
 import { notify } from '../../utils/Toast';
 import HttpService from '../../services/HttpService';
+import ColorPickerComponent from '../../components/ColorPickerComponent';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -167,6 +168,7 @@ const InventoryTable = ({inventoryData,setInventoryData}) => {
                 <TableCell>Name</TableCell>
                 <TableCell>Quantity</TableCell>
                 <TableCell>Value</TableCell>
+                <TableCell>Color</TableCell>
                 <TableCell>Revision</TableCell>
                 <TableCell>Images</TableCell>
                 <TableCell>Actions</TableCell>
@@ -183,6 +185,9 @@ const InventoryTable = ({inventoryData,setInventoryData}) => {
                         <TableCell>{item.name}</TableCell>
                         <TableCell>{item.quantity}</TableCell>
                         <TableCell>{item.value}</TableCell>
+                        <TableCell>
+                          <ColorPickerComponent defaultValue={"#ff0000"} readOnly={true} size={35} /> 
+                        </TableCell>
                         <TableCell>{item.revision}</TableCell>
                         <TableCell>
                           <ImageGalleryUploader

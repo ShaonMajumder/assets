@@ -22,6 +22,7 @@ import { HTTP_OK, HTTP_CREATED } from "../../../utils/HttpStatusCode";
 import { notify } from '../../../components/ImageGalleryUploader/Toast';
 import { SUCCESS } from '../../../components/ImageGalleryUploader/MessageConst';
 import { useNavigate } from 'react-router-dom';
+import ColorPickerComponent from '../../../components/ColorPickerComponent';
 
 const myTheme = createTheme({
   palette: {
@@ -202,6 +203,8 @@ const Create = () => {
                       handleRemoveImage={handleRemoveImage}
                       
                     />
+
+                    <ColorPickerComponent defaultValue={"#ff0000"} size={35} /> 
                       
                     <Button
                     style={{ marginTop: '1rem' }}

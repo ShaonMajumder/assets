@@ -8,6 +8,7 @@ import { listInventory } from '../../services/InventoryServices';
 import { HTTP_OK } from '../../utils/HttpStatusCode';
 import { notify } from '../../utils/Toast';
 
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
@@ -18,10 +19,15 @@ const useStyles = makeStyles((theme) => ({
 const Dashboard = () => {
   const classes = useStyles();
   const [inventoryDataList, setInventoryDataList] = useState([]);
+  const [selectedColor, setSelectedColor] = useState('#000000');
   
   useEffect(() => {
     fetchInventories();
   },[]);
+
+  const handleColorChange = (color) => {
+    setSelectedColor(color.hex);
+  };
 
   const fetchInventories = async () => {
     const {data,status} = await listInventory();
