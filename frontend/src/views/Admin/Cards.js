@@ -77,14 +77,14 @@ const Cards = ({inventoryData,setInventoryData}) => {
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <Paper className={classes.paper}>
-              <Typography variant="h6">Assets in Use</Typography>
+              <Typography variant="h6">Assets in Use  - Need to implement</Typography>
               <Typography variant="h4">567</Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <Paper className={`${classes.paper} ${classes.warningCard}`}>
               <Typography variant="h6" className={classes.warningTypography}>
-                Idle Assets
+                Idle Assets  - Need to implement
               </Typography>
               <Typography variant="h4" className={classes.warningTypography}>
                 567
@@ -93,19 +93,19 @@ const Cards = ({inventoryData,setInventoryData}) => {
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <Paper className={classes.paper}>
-              <Typography variant="h6">Available Assets</Typography>
+              <Typography variant="h6">Available Assets - Need to implement</Typography>
               <Typography variant="h4">123,456</Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <Paper className={classes.paper}>
-              <Typography variant="h6">Maintenance Requests</Typography>
+              <Typography variant="h6">Maintenance Requests - Need to implement</Typography>
               <Typography variant="h4">890</Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <Paper className={classes.paper}>
-              <Typography variant="h6">Buying Requests</Typography>
+              <Typography variant="h6">Buying Requests - Need to implement</Typography>
               <Typography variant="h4">750</Typography>
             </Paper>
           </Grid>

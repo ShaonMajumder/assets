@@ -8,6 +8,25 @@ An asset management app template.
 - Material UI
 - Laravel 10
 
+## Run
+
+yarn start
+
+## Demo
+
+### Dashboard
+
+![Last Progress](./dashboard.png)
+
+### Login
+
+![Last Progress](./login.png)
+
+### Inventory
+
+![Last Progress](./inventory.png)
+
+
 ## Build Log
 
 ```bash
@@ -54,21 +73,3 @@ composer require laravel/sanctum
 php artisan make:controller LoginController
 php artisan make:resource UserResource
 ```
-
-## Run
-
-yarn start
-
-## Demo
-
-### Dashboard
-
-![Last Progress](./dashboard.png)
-
-### Login
-
-![Last Progress](./login.png)
-
-### Inventory
-
-![Last Progress](./inventory.png)

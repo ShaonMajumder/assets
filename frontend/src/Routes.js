@@ -10,6 +10,7 @@ import CreateInventory from './views/Admin/CreateInventory';
 import UpdateInventory from './views/Admin/UpdateInventory';
 import Test from './views/Admin/Inventory/Test';
 import Product from './views/Product';
+import SurveyDashboard from './views/Admin/SurveyDashboard';
 
 const routes = [
   {
@@ -90,6 +91,16 @@ const routes = [
     name: 'Backend Logs',
     path: '/logs',
     component: <LogHistory />,
+    sideBar: false,
+    subNav: [],
+    permission: true,
+    private: true, // Private route
+  },
+  {
+    name: 'Survey',
+    path: '/survey',
+    component: <SurveyDashboard />,
+    icon: <FaDashcube />,
     sideBar: false,
     subNav: [],
     permission: true,
